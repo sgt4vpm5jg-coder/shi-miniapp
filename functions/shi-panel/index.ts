@@ -1,10 +1,18 @@
-// Бот @shi_panel_bot: панель кнопок под постами канала SHI | РЕАКЦИЯ.
+// Бот @shi_panel_bot: панель кнопок под новыми постами каналов SHI | РЕАКЦИЯ и SHI SHOP.
 // Кнопки ведут в разделы мини-приложения SHI (@shi_media_bot). Пост с ✨, альбом или пост со своими кнопками не трогаем.
 // Токен из секрета SHI_PANEL_TOKEN. Запросы от Telegram проверяются по заголовку secret_token.
 const TOKEN = Deno.env.get("SHI_PANEL_TOKEN") ?? "";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const CHANNEL = -1001441967671; // SHI | РЕАКЦИЯ
 const APP = "https://t.me/shi_media_bot?startapp";
+const SHOP = -1003855705601; // SHI SHOP: под новыми постами та же панель категорий, что под карточками
+const SHOP_PANEL = {
+  inline_keyboard: [
+    [{ text: "Бренды", url: "https://t.me/shi_shopping/48" }, { text: "Макияж", url: "https://t.me/shi_shopping/4" }],
+    [{ text: "Уход", url: "https://t.me/shi_shopping/45" }, { text: "Тело", url: "https://t.me/shi_shopping/46" }, { text: "Парфюмерия", url: "https://t.me/shi_shopping/47" }],
+    [{ text: "ПИШИ SHI ↗", url: "https://t.me/shiwithme" }],
+  ],
+};
 const FIX_POSTS = [1544]; // посты, на которых панель уже стоит и её нужно обновить
 const PANEL = {
   inline_keyboard: [
@@ -55,9 +63,10 @@ Deno.serve(async (req) => {
 
   const update = await req.json().catch(() => null);
   const p = update?.channel_post;
-  if (!p || p.chat?.id !== CHANNEL) return new Response("ok");
+  const chat = p?.chat?.id;
+  if (!p || (chat !== CHANNEL && chat !== SHOP)) return new Response("ok");
   const text = String(p.text || p.caption || "");
   if (p.media_group_id || p.reply_markup || text.includes("✨")) return new Response("ok");
-  await tg("editMessageReplyMarkup", { chat_id: CHANNEL, message_id: p.message_id, reply_markup: PANEL });
+  await tg("editMessageReplyMarkup", { chat_id: chat, message_id: p.message_id, reply_markup: chat === SHOP ? SHOP_PANEL : PANEL });
   return new Response("ok");
 });
