@@ -13,14 +13,17 @@ const SHOP_PANEL = {
     [{ text: "ПИШИ SHI ↗", url: "https://t.me/shiwithme" }],
   ],
 };
-const FIX_POSTS = [1544]; // посты, на которых панель уже стоит и её нужно обновить
+// Панель под постами SHI | РЕАКЦИЯ, по её схеме от 19.11
 const PANEL = {
   inline_keyboard: [
-    [{ text: "SHI SHOP ↗", url: APP + "=shop" }, { text: "SHI BUYER ↗", url: APP + "=buyer" }],
-    [{ text: "SHI СОТРУДНИЧЕСТВО ↗", url: APP + "=partners" }],
-    [{ text: "О НАС ↗", url: APP }, { text: "SHI НА СВЯЗИ ↗", url: "https://t.me/shiwithme" }],
+    [{ text: "О НАС", url: APP + "=about" }, { text: "НАШИ ПАРТНЁРЫ", url: APP + "=partners" }],
+    [{ text: "SHI SHOP", url: APP + "=shop" }, { text: "SHI BUYER", url: APP + "=buyer" }],
+    [{ text: "ПИШИ SHI", url: APP + "=help" }],
   ],
 };
+// Кнопка закреплённого поста (синяя кнопка в шапке канала)
+const PIN = { inline_keyboard: [[{ text: "ОТКРЫТЬ SHI", url: APP }]] };
+const FIX: Record<number, unknown> = { 1544: PANEL, 1529: PIN }; // уже опубликованные посты, которые нужно обновить
 
 async function secret(): Promise<string> {
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("panel:" + TOKEN));
@@ -52,8 +55,8 @@ Deno.serve(async (req) => {
     const who = await tg("getMe", {});
     if (who?.result?.username !== "shi_panel_bot") return json({ ok: false, error: "wrong token", bot: who?.result?.username || null }, 400);
     const out: Record<string, unknown> = {};
-    for (const id of FIX_POSTS) {
-      const r = await tg("editMessageReplyMarkup", { chat_id: CHANNEL, message_id: id, reply_markup: PANEL });
+    for (const [id, markup] of Object.entries(FIX)) {
+      const r = await tg("editMessageReplyMarkup", { chat_id: CHANNEL, message_id: Number(id), reply_markup: markup });
       out[id] = r.ok ? "ok" : r.description;
     }
     return json(out);

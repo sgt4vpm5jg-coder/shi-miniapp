@@ -218,9 +218,10 @@ function editPage(k){
 function viewSettings(){
   const s=data.settings;
   body().innerHTML=`<div class="box"><label>Кому пишут из приложения (ник в Телеграм без @)</label><input type="text" id="s_c" value="${esc(s.contact_username)}">
+   <label>Редакция: кому пишут «Написать в редакцию» (ник без @)</label><input type="text" id="s_e" value="${esc(s.editor_username||'shiwithme')}">
    <label>Инстаграм</label><input type="url" id="s_i" value="${esc(s.instagram_url)}"><label>Телеграм-канал</label><input type="url" id="s_t" value="${esc(s.telegram_url)}">
    <div class="bar"><button class="btn" id="save">Сохранить</button></div></div>`;
-  document.getElementById('save').onclick=async e=>{e.target.disabled=true;const rows=[['contact_username',v('s_c').replace(/^@/,'').trim()],['instagram_url',v('s_i').trim()],['telegram_url',v('s_t').trim()]].map(([key,value])=>({key,value}));
+  document.getElementById('save').onclick=async e=>{e.target.disabled=true;const rows=[['contact_username',v('s_c').replace(/^@/,'').trim()],['editor_username',v('s_e').replace(/^@/,'').trim()],['instagram_url',v('s_i').trim()],['telegram_url',v('s_t').trim()]].map(([key,value])=>({key,value}));
    try{await api('settings',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});rows.forEach(r=>data.settings[r.key]=r.value);toast('Сохранено');}catch(err){toast(err.message);}e.target.disabled=false;};
 }
 

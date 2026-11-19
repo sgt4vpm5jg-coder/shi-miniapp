@@ -48,6 +48,13 @@ header.top{position:sticky;top:0;z-index:20;background:var(--white)}
 .page h2{font-family:var(--head);font-weight:900;font-size:28px;letter-spacing:-.02em}
 .page .sub{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--grey);text-transform:uppercase}
 .page .body{font-size:14px;line-height:21px;opacity:.88;white-space:pre-line}
+.help{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.hitem{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 16px;color:var(--ink);cursor:pointer}
+.hitem .ht{display:flex;flex-direction:column;gap:6px}
+.hitem b{font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+.hitem .ht span{font-size:13px;opacity:.7}
+.hitem .ar{font-size:20px}
+.hitem.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
 .banner{height:300px;background:#ddd center/cover no-repeat;position:relative}
 .banner video{width:100%;height:100%;object-fit:cover}
 .snd{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
@@ -164,22 +171,23 @@ function demo(){ // предпросмотр без базы
 const contactUser=()=> (S.settings.contact_username||cfg.contactUsername||'').replace(/^@/,'');
 function openLink(url){ if(!url) return; if(tg&&/^https:\/\/t\.me\//.test(url)&&tg.openTelegramLink) tg.openTelegramLink(url); else if(tg&&tg.openLink) tg.openLink(url); else window.open(url,'_blank'); }
 function writeTo(text){ const u=contactUser(); if(!u) return; openLink(`https://t.me/${u}${text?'?text='+encodeURIComponent(text):''}`); }
+function writeUser(u,text){ u=String(u||'').replace(/^@/,''); if(!u) return writeTo(text); openLink(`https://t.me/${u}${text?'?text='+encodeURIComponent(text):''}`); }
 function sndIc(off){ return `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/>${off?'<path d="m23 9-6 6M17 9l6 6"/>':'<path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>'}</svg>`; }
 function sound(btn){ const v=btn.parentElement&&btn.parentElement.querySelector('video'); if(!v) return;
   v.muted=!v.muted; if(!v.muted){ v.volume=1; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{}); }
   btn.innerHTML=sndIc(v.muted); btn.setAttribute('aria-label',v.muted?'Включить звук':'Выключить звук'); }
-window.SHI={writeTo,openLink,sound,go:h=>{location.hash=h}};
+window.SHI={writeTo,writeUser,openLink,sound,go:h=>{location.hash=h}};
 
 const SECTIONS=[['media','SHI MEDIA'],['shop','SHI SHOP'],['buyer','SHI BUYER'],['partners','SHI PARTNERS']];
 function chrome(route){
   const sec=route.sec;
   document.getElementById('tabs').innerHTML=SECTIONS.map(([k,l])=>`<button class="tab ${sec===k?'on':''}" onclick="SHI.go('#/${k}')">${l}</button>`).join('');
-  const deep=['product','about','search'].includes(route.view);
+  const deep=['product','about','search','help'].includes(route.view);
   const bb=document.getElementById('btnBack'); bb.style.visibility=deep?'visible':'hidden'; bb.onclick=()=>history.length>1?history.back():SHI.go('#/'+sec);
   if(tg&&tg.BackButton){ try{ deep?tg.BackButton.show():tg.BackButton.hide(); tg.BackButton.offClick&&tg.BackButton.offClick(back); tg.BackButton.onClick(back);}catch(e){} }
-  const nav=document.getElementById('nav'); const onNav=route.view==='product'?-1:(sec==='shop'?1:0);
+  const nav=document.getElementById('nav'); const onNav=route.view==='product'?-1:route.view==='help'?2:(sec==='shop'?1:0);
   nav.style.display=route.view==='product'?'none':'flex';
-  nav.innerHTML=[['Главная','home',"SHI.go('#/media')"],['Каталог','grid',"SHI.go('#/shop')"],['Написать','chat',"SHI.writeTo('Здравствуйте! Пишу из приложения SHI')"]]
+  nav.innerHTML=[['Главная','home',"SHI.go('#/media')"],['Каталог','grid',"SHI.go('#/shop')"],['Написать','chat',"SHI.go('#/help')"]]
    .map(([l,i,a],k)=>`<button class="${onNav===k?'on':''}" onclick="${a}">${ic[i](onNav===k?'#1A1715':'#8F8A82')}${l.toUpperCase()}</button>`).join('');
 }
 function back(){ history.length>1?history.back():SHI.go('#/media'); }
@@ -235,6 +243,16 @@ function vProduct(id){
    <div class="sticky"><button class="btn full" onclick="SHI.writeTo(${js(askText(p))})">НАПИСАТЬ О ТОВАРЕ</button></div>`;
 }
 SHI.slide=i=>{const g=document.querySelector('.gallery'); g&&g.scrollTo({left:i*g.clientWidth,behavior:'smooth'});};
+// Экран «Чем можем помочь?»: кнопка «ПИШИ SHI» в канале и «Написать» в нижнем меню
+function vHelp(){
+  const ed=(S.settings.editor_username||'shiwithme');
+  const items=[
+    ['ПРЕДЛОЖИТЬ СОТРУДНИЧЕСТВО','Для брендов, блогеров, салонов и магазинов',"SHI.go('#/partners')"],
+    ['СВЯЗАТЬСЯ С МЕНЕДЖЕРОМ','Наличие, заказы и доставка',`SHI.writeTo(${js('Здравствуйте! Пишу из приложения SHI')})`],
+    ['НАПИСАТЬ В РЕДАКЦИЮ','Вопрос об издании или идея для SHI',`SHI.writeUser(${js(ed)},${js('Здравствуйте! Пишу в редакцию SHI')})`]];
+  return `<section class="page"><span class="sub">ПИШИ SHI</span><h2>Чем можем помочь?</h2>
+   <div class="help">${items.map(([t,d,a],i)=>`<button class="hitem ${i===1?'dark':''}" onclick="${a}"><span class="ht"><b>${t}</b><span>${d}</span></span><span class="ar">→</span></button>`).join('')}</div></section>`;
+}
 function vSearch(){
   const q=S.q.trim().toLowerCase(); const list=q?S.products.filter(p=>(p.title+' '+(p.brand||'')+' '+(p.category||'')).toLowerCase().includes(q)):[];
   return `<div class="search"><input id="q" placeholder="Бренд или товар" value="${esc(S.q)}" autocomplete="off"></div>
@@ -243,16 +261,17 @@ function vSearch(){
 function parse(){ const h=(location.hash||'#/media').slice(2).split('/');
   if(h[0]==='p') return {sec:'shop',view:'product',id:decodeURIComponent(h[1]||'')};
   if(h[0]==='search') return {sec:'shop',view:'search'};
+  if(h[0]==='help') return {sec:'media',view:'help'};
   if(h[0]==='media'&&h[1]==='about') return {sec:'media',view:'about'};
   const sec=SECTIONS.some(s=>s[0]===h[0])?h[0]:'media'; return {sec,view:sec}; }
 function render(){
   const r=parse(); chrome(r); const app=document.getElementById('app');
-  app.innerHTML= r.view==='media'?vMedia(): r.view==='about'?vPage('media'): r.view==='shop'?vShop(): r.view==='product'?vProduct(r.id): r.view==='search'?vSearch(): vPage(r.view);
+  app.innerHTML= r.view==='media'?vMedia(): r.view==='about'?vPage('media'): r.view==='shop'?vShop(): r.view==='product'?vProduct(r.id): r.view==='search'?vSearch(): r.view==='help'?vHelp(): vPage(r.view);
   if(r.view==='search'){ const i=document.getElementById('q'); i.focus(); i.oninput=()=>{S.q=i.value; const pos=i.selectionStart; render(); const n=document.getElementById('q'); n.setSelectionRange(pos,pos);}; }
   if(r.view!=='search') window.scrollTo(0,0);
 }
 (function initialRoute(){ if(/^#\//.test(location.hash)) return; let s=null; try{ s=new URLSearchParams(location.search).get('s'); }catch(e){}
-  if(!s&&tg&&tg.initDataUnsafe) s=tg.initDataUnsafe.start_param; const ok=['media','shop','buyer','partners','about'];
+  if(!s&&tg&&tg.initDataUnsafe) s=tg.initDataUnsafe.start_param; const ok=['media','shop','buyer','partners','about','help'];
   if(s&&ok.includes(s)){ try{ history.replaceState(null,'',location.pathname+location.search+(s==='about'?'#/media/about':'#/'+s)); }catch(e){} } })();
 document.getElementById('btnSearch').onclick=()=>SHI.go('#/search');
 window.addEventListener('hashchange',render);
