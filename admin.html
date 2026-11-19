@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHI · админка</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+:root{--ink:#1A1715;--cream:#F4F1EC;--grey:#8F8A82;--line:#E2DED8;--red:#B3261E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--cream);color:var(--ink);font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 80px}
+h1{font-family:'Inter',sans-serif;font-weight:900;font-size:26px;letter-spacing:-.03em}
+.mono{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{padding:8px 12px;border-radius:16px;border:1px solid rgba(26,23,21,.25);background:none;cursor:pointer}
+.tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:20px;padding:10px 16px;cursor:pointer}
+.btn.line{background:#fff;color:var(--ink);border:1px solid rgba(26,23,21,.25)}
+.btn.red{background:#fff;color:var(--red);border:1px solid rgba(179,38,30,.4)}
+.btn:disabled{opacity:.5}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.list .item{display:flex;gap:12px;align-items:center;padding:10px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer}
+.list .item img,.list .item .noimg{width:56px;height:56px;object-fit:cover;border-radius:4px;background:#eee;flex:0 0 56px}
+.list .item .t{flex:1;min-width:0}
+.list .item .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .item .t span{color:var(--grey);font-size:12px}
+.hidden-badge{color:var(--red);font-size:11px}
+label{display:block;margin:10px 0 4px;font-weight:600;font-size:13px}
+input[type=text],input[type=number],input[type=email],input[type=password],input[type=url],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+textarea{min-height:120px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.checks{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+.checks label{display:flex;gap:6px;align-items:center;margin:0;font-weight:500}
+.photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.photos .ph{width:88px;position:relative}
+.photos img,.photos video{width:88px;height:88px;object-fit:cover;border-radius:6px;background:#eee}
+.photos .ctl{display:flex;justify-content:space-between;margin-top:2px}
+.photos .ctl button{border:0;background:none;cursor:pointer;font-size:14px;padding:2px 6px}
+.add{width:88px;height:88px;border:1px dashed rgba(26,23,21,.35);border-radius:6px;display:grid;place-items:center;cursor:pointer;color:var(--grey);font-size:12px;text-align:center}
+.bar{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:20px;display:none;z-index:9}
+.search{margin-bottom:10px}
+.hint{color:var(--grey);font-size:12px;margin-top:4px}
+.cardrow{display:grid;grid-template-columns:1fr 2fr auto auto;gap:6px;margin-bottom:6px;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap" id="root"></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="file" hidden>
+<script>
+(function(){
+const cfg=window.SHI_CONFIG||{}; const U=cfg.supabaseUrl, K=cfg.supabaseAnonKey, BUCKET=cfg.bucket||'media';
+const root=document.getElementById('root');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast=t=>{const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2600);};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let session=store.get('shi_admin_session'); let tab='products'; let data={products:[],banners:[],pages:{},settings:{}}; let q='';
+const CATS=['Макияж','Уход','Тело','Парфюм','Аксессуары','Наборы'];
+const SECTIONS={media:'SHI MEDIA',shop:'SHI SHOP',buyer:'SHI BUYER',partners:'SHI PARTNERS'};
+
+async function auth(body,grant){
+  const r=await fetch(`${U}/auth/v1/token?grant_type=${grant}`,{method:'POST',headers:{apikey:K,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error_description||j.msg||'Ошибка входа');
+  session={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in-60)*1000,email:j.user&&j.user.email}; store.set('shi_admin_session',session); return session;
+}
+async function token(){ if(!session) throw new Error('auth'); if(Date.now()>session.exp){ try{await auth({refresh_token:session.refresh},'refresh_token');}catch(e){logout();throw e;} } return session.access; }
+async function api(path,opt={}){
+  const t=await token(); const r=await fetch(`${U}/rest/v1/${path}`,{...opt,headers:{apikey:K,Authorization:'Bearer '+t,'Content-Type':'application/json',Prefer:'return=representation',...(opt.headers||{})}});
+  if(r.status===401){logout();throw new Error('Сессия закончилась, войдите снова');}
+  const txt=await r.text(); if(!r.ok) throw new Error(txt||r.status); return txt?JSON.parse(txt):null;
+}
+async function compress(file){
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+  const img=await createImageBitmap(file); const max=1600; const sc=Math.min(1,max/Math.max(img.width,img.height));
+  if(sc===1&&file.size<900000) return file;
+  const c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+  const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height);
+  return await new Promise(res=>c.toBlob(b=>res(new File([b],file.name.replace(/\.\w+$/,'')+'.jpg',{type:'image/jpeg'})),'image/jpeg',0.86));
+}
+async function upload(file,folder){
+  if(file.type.startsWith('video/')&&file.size>50*1024*1024) throw new Error('Видео больше 50 МБ. Сожмите его и загрузите снова.');
+  const f=await compress(file); const ext=(f.name.split('.').pop()||'bin').toLowerCase();
+  const path=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const t=await token(); const r=await fetch(`${U}/storage/v1/object/${BUCKET}/${path}`,{method:'POST',headers:{apikey:K,Authorization:'Bearer '+t,'Content-Type':f.type||'application/octet-stream','x-upsert':'true'},body:f});
+  if(!r.ok) throw new Error('Не загрузилось: '+(await r.text()));
+  return `${U}/storage/v1/object/public/${BUCKET}/${path}`;
+}
+function pick(accept,multiple){ return new Promise(res=>{const i=document.getElementById('file'); i.accept=accept; i.multiple=!!multiple; i.value=''; i.onchange=()=>res([...i.files]); i.click();}); }
+function logout(){ session=null; store.del('shi_admin_session'); viewLogin(); }
+
+function viewLogin(msg){
+  if(!U){ root.innerHTML='<h1>SHI</h1><div class="box" style="margin-top:14px">Админка ещё не подключена к базе. Заполните config.js.</div>'; return; }
+  root.innerHTML=`<h1 style="margin:40px 0 16px">SHI · админка</h1><div class="box" style="max-width:380px">
+   <label>Почта</label><input type="email" id="em" autocomplete="username"><label>Пароль</label><input type="password" id="pw" autocomplete="current-password">
+   <div class="bar"><button class="btn" id="go">Войти</button></div>${msg?`<div class="hint" style="color:var(--red)">${esc(msg)}</div>`:''}</div>`;
+  const go=async()=>{try{await auth({email:document.getElementById('em').value.trim(),password:document.getElementById('pw').value},'password');await loadAll();viewMain();}catch(e){viewLogin(e.message);}};
+  document.getElementById('go').onclick=go; document.getElementById('pw').onkeydown=e=>{if(e.key==='Enter')go();};
+}
+async function loadAll(){
+  const [p,b,pg,st]=await Promise.all([api('products?select=*&order=sort.asc,created_at.desc'),api('banners?select=*&order=section.asc,sort.asc'),api('pages?select=*'),api('settings?select=*')]);
+  data.products=p; data.banners=b; data.pages={}; pg.forEach(x=>data.pages[x.key]=x); data.settings={}; st.forEach(x=>data.settings[x.key]=x.value);
+}
+function viewMain(){
+  root.innerHTML=`<div class="top"><h1>SHI · админка</h1><button class="btn line" id="out">Выйти</button></div>
+   <div class="tabs">${[['products','Товары'],['banners','Баннеры и видео'],['pages','Страницы'],['settings','Настройки']].map(([k,l])=>`<button class="${tab===k?'on':''}" data-t="${k}">${l}</button>`).join('')}</div><div id="body"></div>`;
+  document.getElementById('out').onclick=logout;
+  root.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;viewMain();});
+  ({products:viewProducts,banners:viewBanners,pages:viewPages,settings:viewSettings})[tab]();
+}
+const body=()=>document.getElementById('body');
+
+// ---------- товары
+function viewProducts(){
+  const list=data.products.filter(p=>!q||(p.title+' '+(p.brand||'')).toLowerCase().includes(q.toLowerCase()));
+  body().innerHTML=`<div class="bar" style="margin:0 0 10px"><button class="btn" id="add">+ Добавить товар</button><span class="hint">${data.products.length} товаров</span></div>
+   <input class="search" type="text" id="q" placeholder="Поиск по названию или бренду" value="${esc(q)}">
+   <div class="list">${list.map(p=>`<div class="item" data-id="${esc(p.id)}">${p.photos&&p.photos[0]?`<img src="${esc(p.photos[0])}">`:'<div class="noimg"></div>'}
+   <div class="t"><b>${esc(p.title)}</b><span>${esc(p.brand||'')} · ${p.price!=null?Number(p.price).toLocaleString('ru-RU')+' ₽':'цена по запросу'}${p.is_limited?' · лимитка':''}</span> ${p.visible?'':'<span class="hidden-badge">скрыт</span>'}</div></div>`).join('')}</div>`;
+  document.getElementById('add').onclick=()=>editProduct({title:'',brand:'',category:'Макияж',price:null,photos:[],visible:true,sort:0});
+  const qi=document.getElementById('q'); qi.oninput=()=>{q=qi.value;const pos=qi.selectionStart;viewProducts();const n=document.getElementById('q');n.focus();n.setSelectionRange(pos,pos);};
+  body().querySelectorAll('.item').forEach(el=>el.onclick=()=>editProduct({...data.products.find(p=>String(p.id)===el.dataset.id)}));
+}
+function editProduct(p){
+  p.photos=[...(p.photos||[])];
+  const draw=()=>{
+   body().innerHTML=`<div class="box"><div class="mono" style="margin-bottom:6px">${p.id?'Редактирование':'Новый товар'}</div>
+    <label>Название</label><input type="text" id="f_title" value="${esc(p.title)}">
+    <div class="grid2"><div><label>Бренд</label><input type="text" id="f_brand" value="${esc(p.brand)}"></div>
+    <div><label>Цена, ₽ (пусто = по запросу)</label><input type="number" id="f_price" value="${p.price==null?'':p.price}"></div></div>
+    <div class="grid2"><div><label>Категория</label><input type="text" id="f_cat" list="cats" value="${esc(p.category)}"><datalist id="cats">${CATS.map(c=>`<option value="${c}">`).join('')}</datalist></div>
+    <div><label>Подкатегория (Губы, Лицо, Глаза)</label><input type="text" id="f_sub" value="${esc(p.subcategory)}"></div></div>
+    <label>Описание</label><textarea id="f_desc">${esc(p.description)}</textarea>
+    <label>Фото (первое показывается в каталоге)</label><div class="photos" id="ph">${p.photos.map((u,i)=>`<div class="ph"><img src="${esc(u)}"><div class="ctl"><button data-l="${i}">←</button><button data-x="${i}">✕</button><button data-r="${i}">→</button></div></div>`).join('')}<div class="add" id="addph">+ фото</div></div>
+    <label>Видео</label><div class="photos">${p.video?`<div class="ph"><video src="${esc(p.video)}" muted></video><div class="ctl"><span></span><button id="delvid">✕</button><span></span></div></div>`:'<div class="add" id="addvid">+ видео<br>до 50 МБ</div>'}</div>
+    <div class="checks"><label><input type="checkbox" id="f_lim" ${p.is_limited?'checked':''}> Лимитка</label><label><input type="checkbox" id="f_gift" ${p.is_gift?'checked':''}> Подарок</label><label><input type="checkbox" id="f_vis" ${p.visible!==false?'checked':''}> Показывать в каталоге</label></div>
+    <div class="grid2"><div><label>Порядок (меньше = выше)</label><input type="number" id="f_sort" value="${p.sort||0}"></div><div></div></div>
+    <div class="bar"><div style="display:flex;gap:8px"><button class="btn" id="save">Сохранить</button><button class="btn line" id="cancel">Назад</button></div>${p.id?'<button class="btn red" id="del">Удалить</button>':''}</div></div>`;
+   const read=()=>{p.title=v('f_title');p.brand=v('f_brand');p.price=v('f_price')===''?null:Math.round(Number(v('f_price')));p.category=v('f_cat');p.subcategory=v('f_sub');p.description=v('f_desc');p.is_limited=c('f_lim');p.is_gift=c('f_gift');p.visible=c('f_vis');p.sort=Number(v('f_sort'))||0;};
+   body().querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{read();const i=+b.dataset.l;if(i>0){[p.photos[i-1],p.photos[i]]=[p.photos[i],p.photos[i-1]];}draw();});
+   body().querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{read();const i=+b.dataset.r;if(i<p.photos.length-1){[p.photos[i+1],p.photos[i]]=[p.photos[i],p.photos[i+1]];}draw();});
+   body().querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{read();p.photos.splice(+b.dataset.x,1);draw();});
+   document.getElementById('addph').onclick=async()=>{read();const fs=await pick('image/*',true);if(!fs.length)return;toast('Загружаю фото…');try{for(const f of fs)p.photos.push(await upload(f,'products'));toast('Фото загружены');}catch(e){toast(e.message);}draw();};
+   const av=document.getElementById('addvid'); if(av) av.onclick=async()=>{read();const [f]=await pick('video/*');if(!f)return;toast('Загружаю видео…');try{p.video=await upload(f,'videos');toast('Видео загружено');}catch(e){toast(e.message);}draw();};
+   const dv=document.getElementById('delvid'); if(dv) dv.onclick=()=>{read();p.video=null;draw();};
+   document.getElementById('cancel').onclick=viewProducts;
+   document.getElementById('save').onclick=async e=>{read(); if(!p.title.trim()){toast('Нужно название');return;} e.target.disabled=true;
+     const row={title:p.title.trim(),brand:p.brand||null,category:p.category||null,subcategory:p.subcategory||null,price:p.price,is_limited:p.is_limited,is_gift:p.is_gift,description:p.description||null,photos:p.photos,video:p.video||null,visible:p.visible,sort:p.sort,updated_at:new Date().toISOString()};
+     try{ if(p.id){const [r]=await api('products?id=eq.'+p.id,{method:'PATCH',body:JSON.stringify(row)}); Object.assign(data.products.find(x=>x.id===p.id),r);} else {const [r]=await api('products',{method:'POST',body:JSON.stringify(row)}); data.products.unshift(r);} toast('Сохранено'); viewProducts(); }catch(err){toast(err.message);e.target.disabled=false;} };
+   const d=document.getElementById('del'); if(d) d.onclick=async()=>{ if(!confirm('Удалить товар «'+p.title+'»? Вернуть не получится.'))return; try{await api('products?id=eq.'+p.id,{method:'DELETE'}); data.products=data.products.filter(x=>x.id!==p.id); toast('Удалено'); viewProducts();}catch(err){toast(err.message);} };
+  };
+  draw();
+}
+const v=id=>document.getElementById(id).value; const c=id=>document.getElementById(id).checked;
+
+// ---------- баннеры
+function viewBanners(){
+  body().innerHTML=Object.entries(SECTIONS).map(([s,l])=>{const bs=data.banners.filter(b=>b.section===s);
+   return `<div class="box"><div class="bar" style="margin:0 0 8px"><b class="mono">${l}</b><button class="btn line" data-add="${s}">+ баннер</button></div>
+    ${s==='media'?'<div class="hint" style="margin-bottom:8px">Первый баннер стоит на старте приложения, второй на странице «О нас».</div>':''}
+    <div class="list">${bs.map(b=>`<div class="item" data-id="${esc(b.id)}">${b.media_type==='video'?`<video src="${esc(b.media_url)}" muted style="width:56px;height:56px;object-fit:cover;border-radius:4px"></video>`:(b.media_url?`<img src="${esc(b.media_url)}">`:'<div class="noimg"></div>')}<div class="t"><b>${esc(b.title||'Без заголовка')}</b><span>${b.media_type==='video'?'видео':'фото'} · порядок ${b.sort}</span> ${b.visible?'':'<span class="hidden-badge">скрыт</span>'}</div></div>`).join('')||'<div class="hint">Пока нет</div>'}</div></div>`;}).join('');
+  body().querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>editBanner({section:b.dataset.add,media_type:'image',sort:0,visible:true}));
+  body().querySelectorAll('.item').forEach(el=>el.onclick=()=>editBanner({...data.banners.find(b=>String(b.id)===el.dataset.id)}));
+}
+function editBanner(b){
+  const draw=()=>{
+   body().innerHTML=`<div class="box"><div class="mono">${SECTIONS[b.section]} · баннер</div>
+    <label>Фото или видео</label><div class="photos">${b.media_url?`<div class="ph">${b.media_type==='video'?`<video src="${esc(b.media_url)}" muted autoplay loop></video>`:`<img src="${esc(b.media_url)}">`}</div>`:''}<div class="add" id="up">${b.media_url?'Заменить':'+ загрузить'}</div></div>
+    <div class="hint">Фото лучше вертикальное. Видео до 50 МБ, без звука, крутится по кругу.</div>
+    <label>Заголовок</label><input type="text" id="b_t" value="${esc(b.title)}"><label>Подзаголовок</label><input type="text" id="b_s" value="${esc(b.subtitle)}">
+    <div class="grid2"><div><label>Текст кнопки</label><input type="text" id="b_btn" value="${esc(b.button_text)}"></div><div><label>Ссылка (необязательно)</label><input type="url" id="b_l" value="${esc(b.link)}"></div></div>
+    <div class="grid2"><div><label>Порядок</label><input type="number" id="b_o" value="${b.sort||0}"></div><div class="checks"><label><input type="checkbox" id="b_v" ${b.visible!==false?'checked':''}> Показывать</label></div></div>
+    <div class="bar"><div style="display:flex;gap:8px"><button class="btn" id="save">Сохранить</button><button class="btn line" id="cancel">Назад</button></div>${b.id?'<button class="btn red" id="del">Удалить</button>':''}</div></div>`;
+   const read=()=>{b.title=v('b_t');b.subtitle=v('b_s');b.button_text=v('b_btn');b.link=v('b_l');b.sort=Number(v('b_o'))||0;b.visible=c('b_v');};
+   document.getElementById('up').onclick=async()=>{read();const [f]=await pick('image/*,video/*');if(!f)return;toast('Загружаю…');try{b.media_url=await upload(f,'banners');b.media_type=f.type.startsWith('video/')?'video':'image';toast('Загружено');}catch(e){toast(e.message);}draw();};
+   document.getElementById('cancel').onclick=viewBanners;
+   document.getElementById('save').onclick=async e=>{read();e.target.disabled=true;const row={section:b.section,media_url:b.media_url||null,media_type:b.media_type,title:b.title||null,subtitle:b.subtitle||null,button_text:b.button_text||null,link:b.link||null,sort:b.sort,visible:b.visible};
+     try{ if(b.id){const [r]=await api('banners?id=eq.'+b.id,{method:'PATCH',body:JSON.stringify(row)});Object.assign(data.banners.find(x=>x.id===b.id),r);} else {const [r]=await api('banners',{method:'POST',body:JSON.stringify(row)});data.banners.push(r);} toast('Сохранено');viewBanners(); }catch(err){toast(err.message);e.target.disabled=false;} };
+   const d=document.getElementById('del'); if(d) d.onclick=async()=>{if(!confirm('Удалить баннер?'))return;try{await api('banners?id=eq.'+b.id,{method:'DELETE'});data.banners=data.banners.filter(x=>x.id!==b.id);toast('Удалено');viewBanners();}catch(err){toast(err.message);}};
+  };
+  draw();
+}
+
+// ---------- страницы
+function viewPages(){
+  const keys={media:'SHI MEDIA (О нас)',buyer:'SHI BUYER',partners:'SHI PARTNERS'};
+  body().innerHTML=Object.entries(keys).map(([k,l])=>`<div class="item box" data-k="${k}" style="cursor:pointer"><b>${l}</b><div class="hint">${esc((data.pages[k]&&data.pages[k].body||'').slice(0,90))}…</div></div>`).join('');
+  body().querySelectorAll('[data-k]').forEach(el=>el.onclick=()=>editPage(el.dataset.k));
+}
+function editPage(k){
+  const p=JSON.parse(JSON.stringify(data.pages[k]||{key:k,cards:[],buttons:[]})); p.cards=p.cards||[]; p.buttons=p.buttons||[];
+  const draw=()=>{
+   body().innerHTML=`<div class="box"><label>Заголовок</label><input type="text" id="p_t" value="${esc(p.title)}"><label>Подзаголовок</label><input type="text" id="p_s" value="${esc(p.subtitle)}">
+    <label>Текст</label><textarea id="p_b" style="min-height:180px">${esc(p.body)}</textarea>
+    <label>Блоки (как SHI BUYER и SHI BUYER VIP)</label>${p.cards.map((x,i)=>`<div class="cardrow"><input type="text" data-ct="${i}" value="${esc(x.title)}" placeholder="Заголовок"><input type="text" data-cx="${i}" value="${esc(x.text)}" placeholder="Текст"><label style="margin:0"><input type="checkbox" data-cd="${i}" ${x.dark?'checked':''}> тёмный</label><button class="btn line" data-cr="${i}">✕</button></div>`).join('')}<button class="btn line" id="addc">+ блок</button>
+    <label>Кнопки (пустая ссылка = написать вам в Телеграм)</label>${p.buttons.map((x,i)=>`<div class="cardrow"><input type="text" data-bl="${i}" value="${esc(x.label)}" placeholder="Текст кнопки"><input type="url" data-bu="${i}" value="${esc(x.url)}" placeholder="https://…"><span></span><button class="btn line" data-br="${i}">✕</button></div>`).join('')}<button class="btn line" id="addb">+ кнопка</button>
+    <div class="bar"><div style="display:flex;gap:8px"><button class="btn" id="save">Сохранить</button><button class="btn line" id="cancel">Назад</button></div></div></div>`;
+   const read=()=>{p.title=v('p_t');p.subtitle=v('p_s');p.body=v('p_b');
+    p.cards=p.cards.map((x,i)=>({title:body().querySelector(`[data-ct="${i}"]`).value,text:body().querySelector(`[data-cx="${i}"]`).value,dark:body().querySelector(`[data-cd="${i}"]`).checked}));
+    p.buttons=p.buttons.map((x,i)=>({label:body().querySelector(`[data-bl="${i}"]`).value,url:body().querySelector(`[data-bu="${i}"]`).value}));};
+   document.getElementById('addc').onclick=()=>{read();p.cards.push({title:'',text:'',dark:false});draw();};
+   document.getElementById('addb').onclick=()=>{read();p.buttons.push({label:'',url:''});draw();};
+   body().querySelectorAll('[data-cr]').forEach(b=>b.onclick=()=>{read();p.cards.splice(+b.dataset.cr,1);draw();});
+   body().querySelectorAll('[data-br]').forEach(b=>b.onclick=()=>{read();p.buttons.splice(+b.dataset.br,1);draw();});
+   document.getElementById('cancel').onclick=viewPages;
+   document.getElementById('save').onclick=async e=>{read();e.target.disabled=true;try{const [r]=await api('pages',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({key:k,title:p.title||null,subtitle:p.subtitle||null,body:p.body||null,cards:p.cards,buttons:p.buttons,updated_at:new Date().toISOString()})});data.pages[k]=r;toast('Сохранено');viewPages();}catch(err){toast(err.message);e.target.disabled=false;}};
+  };
+  draw();
+}
+
+// ---------- настройки
+function viewSettings(){
+  const s=data.settings;
+  body().innerHTML=`<div class="box"><label>Кому пишут из приложения (ник в Телеграм без @)</label><input type="text" id="s_c" value="${esc(s.contact_username)}">
+   <label>Инстаграм</label><input type="url" id="s_i" value="${esc(s.instagram_url)}"><label>Телеграм-канал</label><input type="url" id="s_t" value="${esc(s.telegram_url)}">
+   <div class="bar"><button class="btn" id="save">Сохранить</button></div></div>`;
+  document.getElementById('save').onclick=async e=>{e.target.disabled=true;const rows=[['contact_username',v('s_c').replace(/^@/,'').trim()],['instagram_url',v('s_i').trim()],['telegram_url',v('s_t').trim()]].map(([key,value])=>({key,value}));
+   try{await api('settings',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});rows.forEach(r=>data.settings[r.key]=r.value);toast('Сохранено');}catch(err){toast(err.message);}e.target.disabled=false;};
+}
+
+(async()=>{ if(session&&U){ try{await loadAll();viewMain();return;}catch(e){} } viewLogin(); })();
+})();
+</script>
+</body>
+</html>
