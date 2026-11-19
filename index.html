@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>SHI</title>
+<link rel="icon" type="image/png" href="media/logo/shi_avatar_black_1024.png">
+<link rel="apple-touch-icon" href="media/logo/shi_avatar_black_1024.png">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,6 +22,7 @@ img,video{display:block;max-width:100%}
 header.top{position:sticky;top:0;z-index:20;background:var(--white)}
 .bar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line)}
 .bar .logo{font-family:var(--head);font-weight:900;font-size:24px;letter-spacing:-.03em;position:absolute;left:50%;transform:translateX(-50%)}
+.bar .logo svg{display:block;height:18px;width:auto;color:var(--ink)}
 .icon{width:36px;height:36px;display:grid;place-items:center}
 .icon svg{width:22px;height:22px}
 .tabs{display:flex;justify-content:space-between;padding:0 16px;height:40px;align-items:flex-end;border-bottom:1px solid var(--line);overflow-x:auto;gap:12px;scrollbar-width:none}
@@ -105,7 +108,7 @@ nav.bottom svg{width:22px;height:22px}
 </head>
 <body>
 <header class="top">
-  <div class="bar"><button class="icon" id="btnBack" aria-label="Назад" style="visibility:hidden"></button><div class="logo">SHI</div><button class="icon" id="btnSearch" aria-label="Поиск"></button></div>
+  <div class="bar"><button class="icon" id="btnBack" aria-label="Назад" style="visibility:hidden"></button><div class="logo" aria-label="SHI"><svg viewBox="0 0 1562.6 751.0" role="img"><path d="M312.5 750.9765625C509.765625 750.9765625 622.55859375 664.0625 622.55859375 511.71875C622.55859375 395.5078125 551.7578125 331.0546875 384.765625 300.29296875L326.171875 289.55078125C250.48828125 275.87890625 217.7734375 257.32421875 217.7734375 222.65625C217.7734375 186.03515625 257.8125 160.15625 314.94140625 160.15625C375.48828125 160.15625 416.015625 191.40625 420.8984375 242.1875H607.421875C602.5390625 89.84375 492.67578125 0.0 311.03515625 0.0C134.27734375 0.0 13.671875 94.23828125 13.671875 232.421875C13.671875 340.33203125 89.84375 415.0390625 230.46875 441.89453125L302.734375 455.56640625C384.765625 471.19140625 421.875 491.69921875 421.875 526.85546875C421.875 564.94140625 378.90625 590.8203125 314.94140625 590.8203125C241.2109375 590.8203125 194.82421875 556.15234375 191.89453125 497.0703125H0.0C0.0 660.64453125 110.83984375 750.9765625 312.5 750.9765625ZM662.87109375 739.2578125H865.99609375V455.56640625H1108.18359375V739.2578125H1311.30859375V11.71875H1108.18359375V283.69140625H865.99609375V11.71875H662.87109375ZM1562.55859375 11.71875H1359.43359375V739.2578125H1562.55859375Z" fill="currentColor"/></svg></div><button class="icon" id="btnSearch" aria-label="Поиск"></button></div>
   <div class="tabs" id="tabs"></div>
 </header>
 <main id="app"><div class="loading">ЗАГРУЗКА…</div></main>
