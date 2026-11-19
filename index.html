@@ -175,7 +175,7 @@ function chrome(route){
 }
 function back(){ history.length>1?history.back():SHI.go('#/media'); }
 function media(b,cls){ if(!b||!b.media_url) return ''; return b.media_type==='video'
-  ? `<video class="${cls||''}" src="${esc(b.media_url)}" autoplay muted loop playsinline></video>`
+  ? `<video class="${cls||''}" src="${esc(b.media_url)}" ${b.poster_url?`poster="${esc(b.poster_url)}"`:''} autoplay muted loop playsinline preload="metadata"></video>`
   : `<img class="${cls||''}" src="${esc(b.media_url)}" alt="">`; }
 const bannersOf=s=>S.banners.filter(b=>b.section===s);
 
@@ -183,7 +183,7 @@ function vMedia(){
   const b=bannersOf('media')[0]||{};
   return `<section class="hero">${media(b)}<div class="shade"></div><div class="txt">
    <span class="mono" style="font-size:10px;letter-spacing:.1em">INDEPENDENT BEAUTY MEDIA</span>
-   <h1>${esc(b.title||'SHI')}</h1>${b.subtitle?`<p>${esc(b.subtitle)}</p>`:''}
+   ${(b.media_url?b.title:'SHI')?`<h1>${esc(b.media_url?b.title:'SHI')}</h1>`:''}${b.subtitle?`<p>${esc(b.subtitle)}</p>`:''}
    <button class="btn white" onclick="SHI.go('#/media/about')">${esc(b.button_text||'О НАС')}</button></div></section>`;
 }
 function vPage(key){
