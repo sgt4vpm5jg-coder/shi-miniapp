@@ -217,6 +217,8 @@ function vShop(){
 }
 function plural(n){const a=n%10,b=n%100;return a===1&&b!==11?'товар':a>=2&&a<=4&&(b<12||b>14)?'товара':'товаров';}
 SHI.cat=c=>{S.filter.cat=c;render();}; SHI.brand=b=>{S.filter.brand=S.filter.brand===b?null:b;render();};
+// Текст сообщения менеджеру из карточки: товар, цена и ссылка на первое фото (Телеграм покажет его превью)
+function askText(p){ const ph=(p.photos||[])[0]; return 'Здравствуйте! Интересует: '+(p.brand?p.brand+' ':'')+p.title+'\n'+priceOf(p)+(ph?'\n'+ph:''); }
 function vProduct(id){
   const p=S.products.find(x=>String(x.id)===id); if(!p) return '<div class="empty">Товар не найден</div>';
   const items=[...(p.photos||[]).map(u=>({t:'i',u})),...(p.video?[{t:'v',u:p.video}]:[])];
@@ -227,7 +229,7 @@ function vProduct(id){
    <section class="info"><span class="br">${esc(p.brand)}</span><h3>${esc(p.title)}</h3>
    <div class="price">${esc(priceOf(p))}${p.is_limited?'<span class="tag">ЛИМИТКА</span>':''}</div>
    ${p.description?`<div class="desc">${esc(p.description)}</div>`:''}</section>
-   <div class="sticky"><button class="btn full" onclick="SHI.writeTo(${js('Здравствуйте! Интересует: '+(p.brand?p.brand+' ':'')+p.title)})">НАПИСАТЬ О ТОВАРЕ</button></div>`;
+   <div class="sticky"><button class="btn full" onclick="SHI.writeTo(${js(askText(p))})">НАПИСАТЬ О ТОВАРЕ</button></div>`;
 }
 SHI.slide=i=>{const g=document.querySelector('.gallery'); g&&g.scrollTo({left:i*g.clientWidth,behavior:'smooth'});};
 function vSearch(){
