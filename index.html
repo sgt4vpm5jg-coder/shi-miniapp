@@ -47,6 +47,8 @@ header.top{position:sticky;top:0;z-index:20;background:var(--white)}
 .page .body{font-size:14px;line-height:21px;opacity:.88;white-space:pre-line}
 .banner{height:300px;background:#ddd center/cover no-repeat;position:relative}
 .banner video{width:100%;height:100%;object-fit:cover}
+.snd{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.snd svg{width:20px;height:20px}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{border:1px solid var(--line);background:#fff;border-radius:6px;padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px}
 .card.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -159,7 +161,11 @@ function demo(){ // предпросмотр без базы
 const contactUser=()=> (S.settings.contact_username||cfg.contactUsername||'').replace(/^@/,'');
 function openLink(url){ if(!url) return; if(tg&&/^https:\/\/t\.me\//.test(url)&&tg.openTelegramLink) tg.openTelegramLink(url); else if(tg&&tg.openLink) tg.openLink(url); else window.open(url,'_blank'); }
 function writeTo(text){ const u=contactUser(); if(!u) return; openLink(`https://t.me/${u}${text?'?text='+encodeURIComponent(text):''}`); }
-window.SHI={writeTo,openLink,go:h=>{location.hash=h}};
+function sndIc(off){ return `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/>${off?'<path d="m23 9-6 6M17 9l6 6"/>':'<path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>'}</svg>`; }
+function sound(btn){ const v=btn.parentElement&&btn.parentElement.querySelector('video'); if(!v) return;
+  v.muted=!v.muted; if(!v.muted){ v.volume=1; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{}); }
+  btn.innerHTML=sndIc(v.muted); btn.setAttribute('aria-label',v.muted?'Включить звук':'Выключить звук'); }
+window.SHI={writeTo,openLink,sound,go:h=>{location.hash=h}};
 
 const SECTIONS=[['media','SHI MEDIA'],['shop','SHI SHOP'],['buyer','SHI BUYER'],['partners','SHI PARTNERS']];
 function chrome(route){
@@ -175,7 +181,7 @@ function chrome(route){
 }
 function back(){ history.length>1?history.back():SHI.go('#/media'); }
 function media(b,cls){ if(!b||!b.media_url) return ''; return b.media_type==='video'
-  ? `<video class="${cls||''}" src="${esc(b.media_url)}" ${b.poster_url?`poster="${esc(b.poster_url)}"`:''} autoplay muted loop playsinline preload="metadata"></video>`
+  ? `<video class="${cls||''}" src="${esc(b.media_url)}" ${b.poster_url?`poster="${esc(b.poster_url)}"`:''} autoplay muted loop playsinline preload="metadata"></video><button class="snd" aria-label="Звук" onclick="SHI.sound(this)">${sndIc(true)}</button>`
   : `<img class="${cls||''}" src="${esc(b.media_url)}" alt="">`; }
 const bannersOf=s=>S.banners.filter(b=>b.section===s);
 
