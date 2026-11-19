@@ -102,7 +102,7 @@ function viewLogin(msg){
   document.getElementById('go').onclick=go; document.getElementById('pw').onkeydown=e=>{if(e.key==='Enter')go();};
 }
 async function loadAll(){
-  const [p,b,pg,st]=await Promise.all([api('products?select=*&order=sort.asc,created_at.desc'),api('banners?select=*&order=section.asc,sort.asc'),api('pages?select=*'),api('settings?select=*')]);
+  const [p,b,pg,st]=await Promise.all([api('products?select=*&order=sort.desc,created_at.desc'),api('banners?select=*&order=section.asc,sort.asc'),api('pages?select=*'),api('settings?select=*')]);
   data.products=p; data.banners=b; data.pages={}; pg.forEach(x=>data.pages[x.key]=x); data.settings={}; st.forEach(x=>data.settings[x.key]=x.value);
 }
 function viewMain(){
@@ -121,7 +121,7 @@ function viewProducts(){
    <input class="search" type="text" id="q" placeholder="Поиск по названию или бренду" value="${esc(q)}">
    <div class="list">${list.map(p=>`<div class="item" data-id="${esc(p.id)}">${p.photos&&p.photos[0]?`<img src="${esc(p.photos[0])}">`:'<div class="noimg"></div>'}
    <div class="t"><b>${esc(p.title)}</b><span>${esc(p.brand||'')} · ${p.price!=null?Number(p.price).toLocaleString('ru-RU')+' ₽':'цена по запросу'}${p.is_limited?' · лимитка':''}</span> ${p.visible?'':'<span class="hidden-badge">скрыт</span>'}</div></div>`).join('')}</div>`;
-  document.getElementById('add').onclick=()=>editProduct({title:'',brand:'',category:'Макияж',price:null,photos:[],visible:true,sort:0});
+  document.getElementById('add').onclick=()=>editProduct({title:'',brand:'',category:'Макияж',price:null,photos:[],visible:true,sort:Math.max(0,...data.products.map(p=>p.sort||0))+1});
   const qi=document.getElementById('q'); qi.oninput=()=>{q=qi.value;const pos=qi.selectionStart;viewProducts();const n=document.getElementById('q');n.focus();n.setSelectionRange(pos,pos);};
   body().querySelectorAll('.item').forEach(el=>el.onclick=()=>editProduct({...data.products.find(p=>String(p.id)===el.dataset.id)}));
 }
@@ -138,7 +138,7 @@ function editProduct(p){
     <label>Фото (первое показывается в каталоге)</label><div class="photos" id="ph">${p.photos.map((u,i)=>`<div class="ph"><img src="${esc(u)}"><div class="ctl"><button data-l="${i}">←</button><button data-x="${i}">✕</button><button data-r="${i}">→</button></div></div>`).join('')}<div class="add" id="addph">+ фото</div></div>
     <label>Видео</label><div class="photos">${p.video?`<div class="ph"><video src="${esc(p.video)}" muted></video><div class="ctl"><span></span><button id="delvid">✕</button><span></span></div></div>`:'<div class="add" id="addvid">+ видео<br>до 50 МБ</div>'}</div>
     <div class="checks"><label><input type="checkbox" id="f_lim" ${p.is_limited?'checked':''}> Лимитка</label><label><input type="checkbox" id="f_gift" ${p.is_gift?'checked':''}> Подарок</label><label><input type="checkbox" id="f_vis" ${p.visible!==false?'checked':''}> Показывать в каталоге</label></div>
-    <div class="grid2"><div><label>Порядок (меньше = выше)</label><input type="number" id="f_sort" value="${p.sort||0}"></div><div></div></div>
+    <div class="grid2"><div><label>Приоритет (больше = выше в каталоге)</label><input type="number" id="f_sort" value="${p.sort||0}"></div><div></div></div>
     <div class="bar"><div style="display:flex;gap:8px"><button class="btn" id="save">Сохранить</button><button class="btn line" id="cancel">Назад</button></div>${p.id?'<button class="btn red" id="del">Удалить</button>':''}</div></div>`;
    const read=()=>{p.title=v('f_title');p.brand=v('f_brand');p.price=v('f_price')===''?null:Math.round(Number(v('f_price')));p.category=v('f_cat');p.subcategory=v('f_sub');p.description=v('f_desc');p.is_limited=c('f_lim');p.is_gift=c('f_gift');p.visible=c('f_vis');p.sort=Number(v('f_sort'))||0;};
    body().querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{read();const i=+b.dataset.l;if(i>0){[p.photos[i-1],p.photos[i]]=[p.photos[i],p.photos[i-1]];}draw();});
