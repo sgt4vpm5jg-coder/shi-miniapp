@@ -16,7 +16,7 @@ const SHOP_PANEL = {
 // Панель под постами SHI | РЕАКЦИЯ, по её схеме от 19.11
 const PANEL = {
   inline_keyboard: [
-    [{ text: "О НАС", url: APP + "=about" }, { text: "НАШИ ПАРТНЁРЫ", url: APP + "=partners" }],
+    [{ text: "О НАС", url: APP + "=about" }, { text: "ПАРТНЁРЫ", url: APP + "=partners" }],
     [{ text: "SHI SHOP", url: APP + "=shop" }, { text: "SHI BUYER", url: APP + "=buyer" }],
     [{ text: "ПИШИ SHI", url: APP + "=help" }],
   ],
