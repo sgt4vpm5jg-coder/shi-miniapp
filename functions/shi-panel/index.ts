@@ -32,12 +32,17 @@ Deno.serve(async (req) => {
 
   if (req.method === "GET" && url.searchParams.get("setup") === "1") {
     const hook = `${SUPABASE_URL}/functions/v1/shi-panel`;
+    const who = await tg("getMe", {});
+    // Защита: вебхук ставим только боту панели, чтобы не перебить @shi_media_bot чужим токеном
+    if (who?.result?.username !== "shi_panel_bot") return json({ ok: false, error: "wrong token", bot: who?.result?.username || null }, 400);
     const before = await tg("getWebhookInfo", {});
     const r = await tg("setWebhook", { url: hook, secret_token: await secret(), allowed_updates: ["channel_post"] });
     const me = await tg("getMe", {});
     return json({ ok: r.ok, description: r.description, bot: me?.result?.username, previous_webhook: before?.result?.url || "(none)" });
   }
   if (req.method === "GET" && url.searchParams.get("fix") === "1") {
+    const who = await tg("getMe", {});
+    if (who?.result?.username !== "shi_panel_bot") return json({ ok: false, error: "wrong token", bot: who?.result?.username || null }, 400);
     const out: Record<string, unknown> = {};
     for (const id of FIX_POSTS) {
       const r = await tg("editMessageReplyMarkup", { chat_id: CHANNEL, message_id: id, reply_markup: PANEL });
