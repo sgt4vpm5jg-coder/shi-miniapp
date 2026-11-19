@@ -240,6 +240,9 @@ function render(){
   if(r.view==='search'){ const i=document.getElementById('q'); i.focus(); i.oninput=()=>{S.q=i.value; const pos=i.selectionStart; render(); const n=document.getElementById('q'); n.setSelectionRange(pos,pos);}; }
   if(r.view!=='search') window.scrollTo(0,0);
 }
+(function initialRoute(){ if(/^#\//.test(location.hash)) return; let s=null; try{ s=new URLSearchParams(location.search).get('s'); }catch(e){}
+  if(!s&&tg&&tg.initDataUnsafe) s=tg.initDataUnsafe.start_param; const ok=['media','shop','buyer','partners','about'];
+  if(s&&ok.includes(s)){ try{ history.replaceState(null,'',location.pathname+location.search+(s==='about'?'#/media/about':'#/'+s)); }catch(e){} } })();
 document.getElementById('btnSearch').onclick=()=>SHI.go('#/search');
 window.addEventListener('hashchange',render);
 load().then(render).catch(e=>{document.getElementById('app').innerHTML='<div class="empty">Не получилось загрузить каталог. Попробуйте открыть ещё раз.</div>';console.error(e);});
