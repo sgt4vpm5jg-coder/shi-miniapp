@@ -215,7 +215,7 @@ function tile(p){ const ph=(p.photos||[])[0];
   return `<button class="tile" onclick="SHI.go(${js('#/p/'+p.id)})"><div class="ph" ${ph?`style="background-image:url('${esc(ph)}')"`:''}>${p.is_limited?'<span class="tag">ЛИМИТКА</span>':''}</div>
    <span class="br">${esc(p.brand)}</span><span class="nm">${esc(p.title)}</span><span class="pr">${esc(priceOf(p))}</span></button>`; }
 function vShop(){
-  const ORDER=['Макияж','Уход','Тело','Парфюм','Аксессуары','Наборы']; const rank=c=>{const i=ORDER.indexOf(c);return i<0?99:i;};
+  const ORDER=['Макияж','Уход','K-beauty','Волосы','Тело','Парфюм','Аксессуары','Наборы']; const rank=c=>{const i=ORDER.indexOf(c);return i<0?99:i;};
   const cats=['Все',...[...new Set(S.products.map(p=>p.category).filter(Boolean))].sort((a,b)=>rank(a)-rank(b)),...(S.products.some(p=>p.is_limited)?['Лимитки']:[])];
   const brands=[...new Set(S.products.map(p=>p.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   const f=S.filter; let list=S.products.filter(p=>f.cat==='Все'||(f.cat==='Лимитки'?p.is_limited:p.category===f.cat)).filter(p=>!f.brand||p.brand===f.brand);
