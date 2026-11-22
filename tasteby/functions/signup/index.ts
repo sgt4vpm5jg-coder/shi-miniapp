@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
   // Пароль закрытого теста
   const g = await fetch(`${URL_}/rest/v1/rpc/gate_ok`, { method: "POST", headers: admin, body: JSON.stringify({ p: gate }) });
-  if (!(await g.json())) return fail(req, "Нужен пароль теста", 403);
+  if (!g.ok || (await g.json()) !== true) return fail(req, "Нужен пароль теста", 403);
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) return fail(req, "Проверьте email");
   if (password.length < 8 || password.length > 72) return fail(req, "Пароль от 8 символов");
