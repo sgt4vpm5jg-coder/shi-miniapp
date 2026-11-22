@@ -13,7 +13,7 @@ const SHOP_PANEL = {
     [{ text: "ПИШИ SHI ↗", url: "https://t.me/shiwithme" }],
   ],
 };
-// Закреплённое меню SHI SHOP (пост 5) и кнопка возврата для раздела K-beauty (пост 99), обновлено 22.11
+// Закреплённое меню SHI SHOP (пост 5) и кнопка возврата для K-beauty (пост 99) и «Бренды G–Z» (пост 121), обновлено 22.11
 const SHOP_MENU = {
   inline_keyboard: [
     [{ text: "Бренды", url: "https://t.me/shi_shopping/48" }, { text: "K-beauty", url: "https://t.me/shi_shopping/99" }],
@@ -23,7 +23,7 @@ const SHOP_MENU = {
   ],
 };
 const SHOP_BACK = { inline_keyboard: [[{ text: "← Меню", url: "https://t.me/shi_shopping/5" }]] };
-const SHOP_FIX: Record<number, unknown> = { 5: SHOP_MENU, 99: SHOP_BACK };
+const SHOP_FIX: Record<number, unknown> = { 5: SHOP_MENU, 99: SHOP_BACK, 121: SHOP_BACK };
 const ANON = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 // Панель под постами SHI | РЕАКЦИЯ, по её схеме от 19.11
 const PANEL = {
