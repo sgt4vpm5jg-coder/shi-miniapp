@@ -59,6 +59,18 @@ header.top{position:sticky;top:0;z-index:20;background:var(--white)}
 .banner video{width:100%;height:100%;object-fit:cover}
 .snd{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .snd svg{width:20px;height:20px}
+.hero .snd{top:auto;bottom:30px}
+/* Главная 22.11 (выбрала вариант Б): SHI SHOP выделен, на видео кнопка в магазин, под видео новинки */
+.tab.hot{color:#fff;background:var(--ink);border-radius:12px;padding:5px 10px 4px;margin-bottom:5px;border-bottom:0;font-weight:700}
+.hero.vb{height:calc(100vh - 92px - 64px - 150px);min-height:380px}
+.btn.lw{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.7)}
+.strip{padding:18px 0 8px}
+.strip .hd{display:flex;justify-content:space-between;align-items:baseline;padding:0 20px 12px}
+.strip .hd b{font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+.strip .hd button{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--grey)}
+.strip .sc{display:flex;gap:10px;overflow-x:auto;padding:0 20px 6px;scrollbar-width:none;scroll-snap-type:x mandatory;scroll-padding:0 20px}
+.strip .sc::-webkit-scrollbar{display:none}
+.strip .tile{flex:0 0 40%;scroll-snap-align:start}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .card{border:1px solid var(--line);background:#fff;border-radius:6px;padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px}
 .card.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -181,7 +193,7 @@ window.SHI={writeTo,writeUser,openLink,sound,go:h=>{location.hash=h}};
 const SECTIONS=[['media','SHI MEDIA'],['shop','SHI SHOP'],['buyer','SHI BUYER'],['partners','SHI PARTNERS']];
 function chrome(route){
   const sec=route.sec;
-  document.getElementById('tabs').innerHTML=SECTIONS.map(([k,l])=>`<button class="tab ${sec===k?'on':''}" onclick="SHI.go('#/${k}')">${l}</button>`).join('');
+  document.getElementById('tabs').innerHTML=SECTIONS.map(([k,l])=>`<button class="tab ${sec===k?'on':''} ${k==='shop'?'hot':''}" onclick="SHI.go('#/${k}')">${l}</button>`).join('');
   const deep=['product','about','search','help'].includes(route.view);
   const bb=document.getElementById('btnBack'); bb.style.visibility=deep?'visible':'hidden'; bb.onclick=()=>history.length>1?history.back():SHI.go('#/'+sec);
   if(tg&&tg.BackButton){ try{ deep?tg.BackButton.show():tg.BackButton.hide(); tg.BackButton.offClick&&tg.BackButton.offClick(back); tg.BackButton.onClick(back);}catch(e){} }
@@ -198,10 +210,11 @@ const bannersOf=s=>S.banners.filter(b=>b.section===s);
 
 function vMedia(){
   const b=bannersOf('media')[0]||{};
-  return `<section class="hero">${media(b)}<div class="shade"></div><div class="txt">
+  return `<section class="hero vb">${media(b)}<div class="shade"></div><div class="txt">
    <span class="mono" style="font-size:10px;letter-spacing:.1em">INDEPENDENT BEAUTY MEDIA</span>
    ${(b.media_url?b.title:'SHI')?`<h1>${esc(b.media_url?b.title:'SHI')}</h1>`:''}${b.subtitle?`<p>${esc(b.subtitle)}</p>`:''}
-   <button class="btn white" onclick="SHI.go('#/media/about')">${esc(b.button_text||'О НАС')}</button></div></section>`;
+   <div class="row"><button class="btn white" onclick="SHI.go('#/shop')">SHI SHOP →</button><button class="btn lw" onclick="SHI.go('#/media/about')">${esc(b.button_text||'О НАС')}</button></div></div></section>
+   <section class="strip"><div class="hd"><b>НОВИНКИ SHI SHOP</b><button onclick="SHI.go('#/shop')">ВСЕ →</button></div><div class="sc">${S.products.slice(0,8).map(tile).join('')}</div></section>`;
 }
 function vPage(key){
   const p=S.pages[key]||{}; const b=bannersOf(key==='media'?'media':key)[key==='media'?1:0]||bannersOf(key)[0];
