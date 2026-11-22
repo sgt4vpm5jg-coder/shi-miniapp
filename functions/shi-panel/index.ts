@@ -8,11 +8,23 @@ const APP = "https://t.me/shi_media_bot?startapp";
 const SHOP = -1003855705601; // SHI SHOP: под новыми постами та же панель категорий, что под карточками
 const SHOP_PANEL = {
   inline_keyboard: [
-    [{ text: "Бренды", url: "https://t.me/shi_shopping/48" }, { text: "Макияж", url: "https://t.me/shi_shopping/4" }],
-    [{ text: "Уход", url: "https://t.me/shi_shopping/45" }, { text: "Тело", url: "https://t.me/shi_shopping/46" }, { text: "Парфюмерия", url: "https://t.me/shi_shopping/47" }],
+    [{ text: "Бренды", url: "https://t.me/shi_shopping/48" }, { text: "Макияж", url: "https://t.me/shi_shopping/4" }, { text: "Уход", url: "https://t.me/shi_shopping/45" }],
+    [{ text: "K-beauty", url: "https://t.me/shi_shopping/99" }, { text: "Тело", url: "https://t.me/shi_shopping/46" }, { text: "Парфюмерия", url: "https://t.me/shi_shopping/47" }],
     [{ text: "ПИШИ SHI ↗", url: "https://t.me/shiwithme" }],
   ],
 };
+// Закреплённое меню SHI SHOP (пост 5) и кнопка возврата для раздела K-beauty (пост 99), обновлено 22.11
+const SHOP_MENU = {
+  inline_keyboard: [
+    [{ text: "Бренды", url: "https://t.me/shi_shopping/48" }, { text: "K-beauty", url: "https://t.me/shi_shopping/99" }],
+    [{ text: "Макияж", url: "https://t.me/shi_shopping/4" }, { text: "Уход за лицом", url: "https://t.me/shi_shopping/45" }],
+    [{ text: "Тело", url: "https://t.me/shi_shopping/46" }, { text: "Парфюмерия", url: "https://t.me/shi_shopping/47" }],
+    [{ text: "ПИШИ SHI ↗", url: "https://t.me/shiwithme" }],
+  ],
+};
+const SHOP_BACK = { inline_keyboard: [[{ text: "← Меню", url: "https://t.me/shi_shopping/5" }]] };
+const SHOP_FIX: Record<number, unknown> = { 5: SHOP_MENU, 99: SHOP_BACK };
+const ANON = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 // Панель под постами SHI | РЕАКЦИЯ, по её схеме от 19.11
 const PANEL = {
   inline_keyboard: [
@@ -60,6 +72,28 @@ Deno.serve(async (req) => {
       out[id] = r.ok ? "ok" : r.description;
     }
     return json(out);
+  }
+  if (req.method === "GET" && url.searchParams.get("shopfix") === "1") {
+    // Меню и раздел K-beauty + новая панель (с K-beauty) под всеми карточками товаров из базы
+    const who = await tg("getMe", {});
+    if (who?.result?.username !== "shi_panel_bot") return json({ ok: false, error: "wrong token", bot: who?.result?.username || null }, 400);
+    const out: Record<string, unknown> = {};
+    if (url.searchParams.get("menu") === "1") for (const [id, markup] of Object.entries(SHOP_FIX)) {
+      const r = await tg("editMessageReplyMarkup", { chat_id: SHOP, message_id: Number(id), reply_markup: markup });
+      out[id] = r.ok ? "ok" : r.description;
+    }
+    const pr = await fetch(`${SUPABASE_URL}/rest/v1/products?select=source_post&source_post=not.is.null`, { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` } });
+    // Телеграм даёт около 20 правок в минуту на канал, поэтому порциями: ?from=ID&limit=N, пауза 3,2 с
+    const from = Number(url.searchParams.get("from") || 0), limit = Number(url.searchParams.get("limit") || 15);
+    const all = [...new Set(((await pr.json()) || []).map((x: { source_post: number }) => x.source_post))].sort((a, b) => a - b);
+    const posts = all.filter((id) => id >= from).slice(0, limit);
+    let ok = 0; const errors: Record<string, unknown> = {};
+    for (const id of posts) {
+      const r = await tg("editMessageReplyMarkup", { chat_id: SHOP, message_id: id, reply_markup: SHOP_PANEL });
+      if (r.ok || String(r.description || "").includes("not modified")) ok++; else errors[String(id)] = r.description;
+      await new Promise((res) => setTimeout(res, 3200));
+    }
+    return json({ fix: out, total: all.length, batch: posts, ok, errors, next: posts.length ? posts[posts.length - 1] + 1 : null });
   }
   if (req.method !== "POST") return new Response("ok");
   if (req.headers.get("x-telegram-bot-api-secret-token") !== (await secret())) return new Response("forbidden", { status: 403 });
