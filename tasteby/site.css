@@ -98,9 +98,10 @@ h2.t em{font-style:italic;font-weight:300}
 
 /* Две колонки партнёров */
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.duo a,.duo .box{position:relative;min-height:420px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;border-radius:2px}
-.duo .a{background:var(--dark);color:#fff}
-.duo .b{background:var(--pill)}
+.duo>a,.duo>.box{position:relative;min-height:420px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;border-radius:2px}
+.duo>.a{background:var(--dark);color:#fff}
+.duo>.a .btn.fill{background:#fff;border-color:#fff;color:var(--ink)}
+.duo>.b{background:var(--pill)}
 .duo h3{font:400 clamp(36px,4vw,54px)/1 var(--serif);letter-spacing:-.02em}
 .duo p{max-width:34ch;opacity:.8;margin-top:16px;font-size:17px}
 .duo .go{font:500 13px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase}
@@ -193,7 +194,7 @@ html.gated body>*:not(.gate){display:none!important}
   .step,.step+.step{padding:28px 0 4px;border-left:0;border-top:1px solid var(--line)}
   .steps{border-top:0}
   .duo{grid-template-columns:1fr}
-  .duo a,.duo .box{min-height:300px;padding:28px}
+  .duo>a,.duo>.box{min-height:300px;padding:28px}
   .cur{padding:16px}
   .cur strong{font-size:24px}
   .cur small{font-size:14px}
