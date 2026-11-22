@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>SHI</title>
+<link rel="icon" type="image/png" href="media/logo/shi_avatar_black_1024.png">
+<link rel="apple-touch-icon" href="media/logo/shi_avatar_black_1024.png">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;900&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+:root{--ink:#1A1715;--cream:#F4F1EC;--white:#fff;--grey:#8F8A82;--line:#E2DED8;--pill:#EFEDEA;
+--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Manrope',system-ui,sans-serif;--head:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--cream);color:var(--ink);font-family:var(--sans)}
+body{min-height:100vh;padding-bottom:calc(64px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,video{display:block;max-width:100%}
+.mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em}
+header.top{position:sticky;top:0;z-index:20;background:var(--white)}
+.bar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line)}
+.bar .logo{font-family:var(--head);font-weight:900;font-size:24px;letter-spacing:-.03em;position:absolute;left:50%;transform:translateX(-50%)}
+.bar .logo svg{display:block;height:18px;width:auto;color:var(--ink)}
+.icon{width:36px;height:36px;display:grid;place-items:center}
+.icon svg{width:22px;height:22px}
+.tabs{display:flex;justify-content:space-between;padding:0 16px;height:40px;align-items:flex-end;border-bottom:1px solid var(--line);overflow-x:auto;gap:12px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--grey);padding-bottom:9px;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.on{color:var(--ink);font-weight:700;border-color:var(--ink)}
+.hero{position:relative;height:calc(100vh - 92px - 64px);min-height:440px;overflow:hidden;background:#2a2522}
+.hero img,.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .shade{position:absolute;inset:auto 0 0 0;height:60%;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.6))}
+.hero.light .shade{background:linear-gradient(180deg,rgba(244,241,236,0),rgba(244,241,236,.85))}
+.hero .txt{position:absolute;left:20px;right:20px;bottom:28px;color:#fff;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.hero.light .txt{color:var(--ink)}
+.hero h1{font-family:var(--head);font-weight:900;font-size:64px;line-height:.95;letter-spacing:-.03em}
+.hero h1.sm{font-size:34px}
+.hero p{font-size:13px;line-height:18px;max-width:280px;opacity:.9}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;border-radius:22px;background:var(--ink);color:#fff;display:inline-block;text-decoration:none}
+.btn.white{background:#fff;color:var(--ink)}
+.btn.line{background:transparent;color:var(--ink);border:1px solid rgba(26,23,21,.3)}
+.btn.full{display:block;width:100%;text-align:center;padding:16px;border-radius:26px;font-size:12px}
+.dots{position:absolute;right:20px;bottom:32px;display:flex;gap:6px}
+.dots i{width:6px;height:6px;border-radius:3px;background:currentColor;opacity:.35}.dots i.on{opacity:1}
+.page{padding:20px 20px 28px;display:flex;flex-direction:column;gap:12px}
+.page h2{font-family:var(--head);font-weight:900;font-size:28px;letter-spacing:-.02em}
+.page .sub{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--grey);text-transform:uppercase}
+.page .body{font-size:14px;line-height:21px;opacity:.88;white-space:pre-line}
+.help{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.hitem{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 16px;color:var(--ink);cursor:pointer}
+.hitem .ht{display:flex;flex-direction:column;gap:6px}
+.hitem b{font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+.hitem .ht span{font-size:13px;opacity:.7}
+.hitem .ar{font-size:20px}
+.hitem.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.banner{height:300px;background:#ddd center/cover no-repeat;position:relative}
+.banner video{width:100%;height:100%;object-fit:cover}
+.snd{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.snd svg{width:20px;height:20px}
+.hero .snd{top:auto;bottom:30px} /* превью: кнопка звука не закрывает логотип в клипе */
+/* Вариант Б: SHI SHOP выделен, под видео новинки магазина */
+.tab.hot{color:#fff;background:var(--ink);border-radius:12px;padding:5px 10px 4px;margin-bottom:5px;border-bottom:0;font-weight:700}
+.hero.vb{height:calc(100vh - 92px - 64px - 150px);min-height:380px}
+.btn.lw{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.7)}
+.strip{padding:18px 0 8px}
+.strip .hd{display:flex;justify-content:space-between;align-items:baseline;padding:0 20px 12px}
+.strip .hd b{font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+.strip .hd button{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--grey)}
+.strip .sc{display:flex;gap:10px;overflow-x:auto;padding:0 20px 6px;scrollbar-width:none;scroll-snap-type:x mandatory}
+.strip .sc::-webkit-scrollbar{display:none}
+.strip .tile{flex:0 0 40%;scroll-snap-align:start}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{border:1px solid var(--line);background:#fff;border-radius:6px;padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px}
+.card.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.card b{font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.card span{font-size:12px;line-height:17px;font-weight:500;opacity:.88}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.promos{display:flex;gap:10px;overflow-x:auto;padding:14px 20px 0;scroll-snap-type:x mandatory;scrollbar-width:none}
+.promos::-webkit-scrollbar{display:none}
+.promo{flex:0 0 100%;height:112px;border-radius:4px;background:#ddd center/cover;position:relative;scroll-snap-align:start;overflow:hidden}
+.promo:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(244,241,236,.95),rgba(244,241,236,.6) 55%,rgba(244,241,236,0))}
+.promo div{position:absolute;left:16px;bottom:16px;z-index:1}
+.promo b{font-family:var(--mono);font-size:15px;letter-spacing:.04em;display:block}
+.promo small{font-family:var(--mono);font-size:10px;letter-spacing:.08em}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 20px 0;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;border-radius:16px;border:1px solid rgba(26,23,21,.25);white-space:nowrap}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips.brands .chip{text-transform:none;font-family:var(--sans);font-size:12px;letter-spacing:0}
+.head-row{display:flex;justify-content:space-between;align-items:baseline;padding:18px 20px 12px}
+.head-row b{font-family:var(--mono);font-size:12px;letter-spacing:.06em}
+.head-row span{font-size:12px;color:var(--grey);font-weight:500}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 8px;padding:0 20px 24px}
+.tile{display:flex;flex-direction:column;gap:4px;text-align:left}
+.tile .ph{aspect-ratio:1;background:#fff center/cover no-repeat;border-radius:2px;position:relative;margin-bottom:4px}
+.tag{position:absolute;left:8px;top:8px;background:var(--ink);color:#fff;font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:4px 7px}
+.tile .br{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--grey);text-transform:uppercase}
+.tile .nm{font-size:12px;line-height:16px;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile .pr{font-size:13px;font-weight:700}
+.empty{padding:40px 20px;text-align:center;color:var(--grey);font-size:13px}
+.gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:#fff}
+.gallery::-webkit-scrollbar{display:none}
+.gallery>*{flex:0 0 100%;aspect-ratio:1/0.92;scroll-snap-align:start;object-fit:cover;background:#fff}
+.gwrap{position:relative}
+.counter{position:absolute;right:16px;bottom:12px;background:rgba(255,255,255,.9);border-radius:10px;padding:4px 8px;font-family:var(--mono);font-size:10px}
+.thumbs{display:flex;gap:8px;padding:14px 20px 0;overflow-x:auto}
+.thumbs button{flex:0 0 56px;height:56px;border-radius:4px;background:#fff center/cover;position:relative;border:1.5px solid transparent}
+.thumbs button.on{border-color:var(--ink)}
+.thumbs .play{position:absolute;inset:0;display:grid;place-items:center}
+.info{padding:18px 20px 110px;display:flex;flex-direction:column;gap:8px}
+.info .br{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--grey);text-transform:uppercase}
+.info h3{font-size:19px;line-height:25px;font-weight:600}
+.info .price{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:700}
+.info .price .tag{position:static}
+.info .desc{font-size:14px;line-height:21px;color:#4a4540;white-space:pre-line;margin-top:6px}
+.sticky{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:520px;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 20px calc(10px + env(safe-area-inset-bottom));z-index:30}
+nav.bottom{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:520px;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;z-index:25}
+nav.bottom button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:33%;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--grey)}
+nav.bottom button.on{color:var(--ink);font-weight:700}
+nav.bottom svg{width:22px;height:22px}
+.search{padding:14px 20px 0}
+.search input{width:100%;font:500 15px var(--sans);padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;outline:none}
+.loading{padding:60px 20px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--grey)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar"><button class="icon" id="btnBack" aria-label="Назад" style="visibility:hidden"></button><div class="logo" aria-label="SHI"><svg viewBox="0 0 1562.6 751.0" role="img"><path d="M312.5 750.9765625C509.765625 750.9765625 622.55859375 664.0625 622.55859375 511.71875C622.55859375 395.5078125 551.7578125 331.0546875 384.765625 300.29296875L326.171875 289.55078125C250.48828125 275.87890625 217.7734375 257.32421875 217.7734375 222.65625C217.7734375 186.03515625 257.8125 160.15625 314.94140625 160.15625C375.48828125 160.15625 416.015625 191.40625 420.8984375 242.1875H607.421875C602.5390625 89.84375 492.67578125 0.0 311.03515625 0.0C134.27734375 0.0 13.671875 94.23828125 13.671875 232.421875C13.671875 340.33203125 89.84375 415.0390625 230.46875 441.89453125L302.734375 455.56640625C384.765625 471.19140625 421.875 491.69921875 421.875 526.85546875C421.875 564.94140625 378.90625 590.8203125 314.94140625 590.8203125C241.2109375 590.8203125 194.82421875 556.15234375 191.89453125 497.0703125H0.0C0.0 660.64453125 110.83984375 750.9765625 312.5 750.9765625ZM662.87109375 739.2578125H865.99609375V455.56640625H1108.18359375V739.2578125H1311.30859375V11.71875H1108.18359375V283.69140625H865.99609375V11.71875H662.87109375ZM1562.55859375 11.71875H1359.43359375V739.2578125H1562.55859375Z" fill="currentColor"/></svg></div><button class="icon" id="btnSearch" aria-label="Поиск"></button></div>
+  <div class="tabs" id="tabs"></div>
+</header>
+<main id="app"><div class="loading">ЗАГРУЗКА…</div></main>
+<nav class="bottom" id="nav"></nav>
+<script>
+(function(){
+const cfg=window.SHI_CONFIG||{};
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){try{tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#FFFFFF');tg.setBackgroundColor&&tg.setBackgroundColor('#F4F1EC');}catch(e){}}
+const ic={
+ back:'<svg viewBox="0 0 24 24" fill="none"><path d="M14.5 5.5L8 12l6.5 6.5" stroke="#1A1715" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ search:'<svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6.5" stroke="#1A1715" stroke-width="1.5"/><path d="M20 20l-4.2-4.2" stroke="#1A1715" stroke-width="1.5" stroke-linecap="round"/></svg>',
+ home:c=>`<svg viewBox="0 0 24 24" fill="none"><path d="M4 10.5L12 4.5l8 6v9h-5.5V14h-5v5.5H4z" stroke="${c}" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+ grid:c=>`<svg viewBox="0 0 24 24" fill="none"><rect x="4.5" y="4.5" width="6" height="6" stroke="${c}" stroke-width="1.5"/><rect x="13.5" y="4.5" width="6" height="6" stroke="${c}" stroke-width="1.5"/><rect x="4.5" y="13.5" width="6" height="6" stroke="${c}" stroke-width="1.5"/><rect x="13.5" y="13.5" width="6" height="6" stroke="${c}" stroke-width="1.5"/></svg>`,
+ chat:c=>`<svg viewBox="0 0 24 24" fill="none"><path d="M4.5 5.5h15v10h-9L6 19v-3.5H4.5z" stroke="${c}" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+ play:'<svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="rgba(0,0,0,.45)"/><path d="M10 8l6 4-6 4z" fill="#fff"/></svg>'
+};
+document.getElementById('btnBack').innerHTML=ic.back;
+document.getElementById('btnSearch').innerHTML=ic.search;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const js=x=>esc(JSON.stringify(x));
+const priceOf=p=>p.price==null&&p.is_gift?'Подарок к покупке':rub(p.price);
+const rub=n=>n==null?'Цена по запросу':Number(n).toLocaleString('ru-RU').replace(/ | /g,' ')+' ₽';
+const S={products:[],banners:[],pages:{},settings:{},filter:{cat:'Все',brand:null},q:''};
+
+async function rest(table,params){
+  const r=await fetch(`${cfg.supabaseUrl}/rest/v1/${table}?${params}`,{headers:{apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+cfg.supabaseAnonKey}});
+  if(!r.ok) throw new Error(table+' '+r.status); return r.json();
+}
+async function load(){
+  if(!cfg.supabaseUrl){ demo(); return; }
+  const [p,b,pg,st]=await Promise.all([
+    rest('products','select=*&visible=eq.true&order=sort.desc,created_at.desc'),
+    rest('banners','select=*&visible=eq.true&order=sort.asc'),
+    rest('pages','select=*'), rest('settings','select=*')]);
+  S.products=p; S.banners=b; pg.forEach(x=>S.pages[x.key]=x); st.forEach(x=>S.settings[x.key]=x.value);
+  // Превью 22.11, вариант Б: первым SHI MEDIA с клипом, SHI SHOP выделен, под видео новинки
+  const mb=S.banners.find(x=>x.section==='media'); if(mb){ mb.media_type='video'; mb.media_url='https://sgt4vpm5jg-coder.github.io/shi-miniapp/media/shi_hero_clip.mp4'; mb.poster_url='https://sgt4vpm5jg-coder.github.io/shi-miniapp/media/shi_hero_clip_poster.jpg'; }
+}
+function demo(){ // предпросмотр без базы
+  const g=(a,b)=>`data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><defs><linearGradient id="g" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="600" height="600" fill="url(#g)"/></svg>`)}`;
+  S.products=[
+   {id:'1',title:'Couture Face Palette, Brewed Reflections',brand:'YSL',category:'Макияж',subcategory:'Лицо',price:25000,is_limited:true,description:'Палетка румян и хайлайтеров YSL, лимитированный выпуск.',photos:[g('#7a3b3b','#d9a0a0'),g('#5a2a2a','#c48a8a')]},
+   {id:'2',title:'Pillow Talk Blush Balm, тинт для губ',brand:'Charlotte Tilbury',category:'Макияж',subcategory:'Губы',price:7000,photos:[g('#f2c9bd','#e9967a')]},
+   {id:'3',title:'Make Me Blush, пудровые румяна',brand:'YSL',category:'Макияж',subcategory:'Лицо',price:10000,photos:[g('#f6b3c6','#e85a8a')]},
+   {id:'4',title:'Watermelon Glow Jelly Sheet Mask',brand:'Glow Recipe',category:'Уход',price:3200,photos:[g('#fbd3d3','#7fbf7f')]}];
+  S.banners=[{section:'media',media_type:'image',media_url:g('#3a2f2a','#8a6a5a'),title:'SHI',subtitle:'Бьюти-редакция о косметике, культуре и красоте',button_text:'О НАС'},
+   {section:'shop',media_type:'image',media_url:g('#efe6da','#d8c3a8'),title:'НОВИНКИ НЕДЕЛИ'},
+   {section:'buyer',media_type:'image',media_url:g('#d9cbb8','#8a7a66')},{section:'partners',media_type:'image',media_url:g('#eadbd0','#b99b88')}];
+  S.pages={media:{title:'SHI MEDIA',subtitle:'INDEPENDENT BEAUTY MEDIA',body:'Мы придумали независимую бьюти-редакцию.',buttons:[{label:'INSTAGRAM',url:'https://instagram.com/shi.with.me'}]},
+   buyer:{title:'SHI BUYER',body:'Пришлите фото или ссылку, посчитаем цену с доставкой.',cards:[{title:'SHI BUYER',text:'Привезём из любой точки мира то, чего нет в каталоге.'},{title:'SHI BUYER VIP',text:'Достаём лимитки и то, что не достать.',dark:true}],buttons:[{label:'НАПИСАТЬ'}]},
+   partners:{title:'SHI PARTNERS',body:'Совместные проекты с блогерами, салонами и магазинами.',buttons:[{label:'СТАТЬ ПАРТНЁРОМ'}]}};
+}
+
+const contactUser=()=> (S.settings.contact_username||cfg.contactUsername||'').replace(/^@/,'');
+function openLink(url){ if(!url) return; if(tg&&/^https:\/\/t\.me\//.test(url)&&tg.openTelegramLink) tg.openTelegramLink(url); else if(tg&&tg.openLink) tg.openLink(url); else window.open(url,'_blank'); }
+function writeTo(text){ const u=contactUser(); if(!u) return; openLink(`https://t.me/${u}${text?'?text='+encodeURIComponent(text):''}`); }
+function writeUser(u,text){ u=String(u||'').replace(/^@/,''); if(!u) return writeTo(text); openLink(`https://t.me/${u}${text?'?text='+encodeURIComponent(text):''}`); }
+function sndIc(off){ return `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/>${off?'<path d="m23 9-6 6M17 9l6 6"/>':'<path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>'}</svg>`; }
+function sound(btn){ const v=btn.parentElement&&btn.parentElement.querySelector('video'); if(!v) return;
+  v.muted=!v.muted; if(!v.muted){ v.volume=1; const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{}); }
+  btn.innerHTML=sndIc(v.muted); btn.setAttribute('aria-label',v.muted?'Включить звук':'Выключить звук'); }
+window.SHI={writeTo,writeUser,openLink,sound,go:h=>{location.hash=h}};
+
+const SECTIONS=[['media','SHI MEDIA'],['shop','SHI SHOP'],['buyer','SHI BUYER'],['partners','SHI PARTNERS']];
+function chrome(route){
+  const sec=route.sec;
+  document.getElementById('tabs').innerHTML=SECTIONS.map(([k,l])=>`<button class="tab ${sec===k?'on':''} ${k==='shop'?'hot':''}" onclick="SHI.go('#/${k}')">${l}</button>`).join('');
+  const deep=['product','about','search','help'].includes(route.view);
+  const bb=document.getElementById('btnBack'); bb.style.visibility=deep?'visible':'hidden'; bb.onclick=()=>history.length>1?history.back():SHI.go('#/'+sec);
+  if(tg&&tg.BackButton){ try{ deep?tg.BackButton.show():tg.BackButton.hide(); tg.BackButton.offClick&&tg.BackButton.offClick(back); tg.BackButton.onClick(back);}catch(e){} }
+  const nav=document.getElementById('nav'); const onNav=route.view==='product'?-1:route.view==='help'?2:(sec==='shop'?1:0);
+  nav.style.display=route.view==='product'?'none':'flex';
+  nav.innerHTML=[['Главная','home',"SHI.go('#/media')"],['Каталог','grid',"SHI.go('#/shop')"],['Написать','chat',"SHI.go('#/help')"]]
+   .map(([l,i,a],k)=>`<button class="${onNav===k?'on':''}" onclick="${a}">${ic[i](onNav===k?'#1A1715':'#8F8A82')}${l.toUpperCase()}</button>`).join('');
+}
+function back(){ history.length>1?history.back():SHI.go('#/media'); }
+function media(b,cls){ if(!b||!b.media_url) return ''; return b.media_type==='video'
+  ? `<video class="${cls||''}" src="${esc(b.media_url)}" ${b.poster_url?`poster="${esc(b.poster_url)}"`:''} autoplay muted loop playsinline preload="metadata"></video><button class="snd" aria-label="Звук" onclick="SHI.sound(this)">${sndIc(true)}</button>`
+  : `<img class="${cls||''}" src="${esc(b.media_url)}" alt="">`; }
+const bannersOf=s=>S.banners.filter(b=>b.section===s);
+
+function vMedia(){
+  const b=bannersOf('media')[0]||{};
+  return `<section class="hero vb">${media(b)}<div class="shade"></div><div class="txt">
+   <span class="mono" style="font-size:10px;letter-spacing:.1em">INDEPENDENT BEAUTY MEDIA</span>
+   ${(b.media_url?b.title:'SHI')?`<h1>${esc(b.media_url?b.title:'SHI')}</h1>`:''}${b.subtitle?`<p>${esc(b.subtitle)}</p>`:''}
+   <div class="row"><button class="btn white" onclick="SHI.go('#/shop')">SHI SHOP →</button><button class="btn lw" onclick="SHI.go('#/media/about')">${esc(b.button_text||'О НАС')}</button></div></div></section>
+   <section class="strip"><div class="hd"><b>НОВИНКИ SHI SHOP</b><button onclick="SHI.go('#/shop')">ВСЕ →</button></div><div class="sc">${S.products.slice(0,8).map(tile).join('')}</div></section>`;
+}
+function vPage(key){
+  const p=S.pages[key]||{}; const b=bannersOf(key==='media'?'media':key)[key==='media'?1:0]||bannersOf(key)[0];
+  const cards=(p.cards||[]).map(c=>`<div class="card ${c.dark?'dark':''}"><b>${esc(c.title)}</b><span>${esc(c.text)}</span></div>`).join('');
+  const btns=(p.buttons||[]).map((x,i)=>`<button class="btn ${i?'line':''}" onclick="${x.url?`SHI.openLink(${js(x.url)})`:`SHI.writeTo(${js('Здравствуйте! Пишу из '+(p.title||'SHI'))})`}">${esc(x.label||'НАПИСАТЬ')}</button>`).join('');
+  return `${b?`<div class="banner" ${b.media_type==='image'?`style="background-image:url('${esc(b.media_url)}')"`:''}>${b.media_type==='video'?media(b):''}</div>`:''}
+   <section class="page"><h2>${esc(p.title||'')}</h2>${p.subtitle?`<div class="sub">${esc(p.subtitle)}</div>`:''}
+   ${p.body?`<div class="body">${esc(p.body)}</div>`:''}${cards?`<div class="cards">${cards}</div>`:''}${btns?`<div class="row" style="margin-top:6px">${btns}</div>`:''}</section>`;
+}
+function tile(p){ const ph=(p.photos||[])[0];
+  return `<button class="tile" onclick="SHI.go(${js('#/p/'+p.id)})"><div class="ph" ${ph?`style="background-image:url('${esc(ph)}')"`:''}>${p.is_limited?'<span class="tag">ЛИМИТКА</span>':''}</div>
+   <span class="br">${esc(p.brand)}</span><span class="nm">${esc(p.title)}</span><span class="pr">${esc(priceOf(p))}</span></button>`; }
+function vShop(){
+  const ORDER=['Макияж','Уход','K-beauty','Волосы','Тело','Парфюм','Аксессуары','Наборы']; const rank=c=>{const i=ORDER.indexOf(c);return i<0?99:i;};
+  const cats=['Все',...[...new Set(S.products.map(p=>p.category).filter(Boolean))].sort((a,b)=>rank(a)-rank(b)),...(S.products.some(p=>p.is_limited)?['Лимитки']:[])];
+  const brands=[...new Set(S.products.map(p=>p.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const f=S.filter; let list=S.products.filter(p=>f.cat==='Все'||(f.cat==='Лимитки'?p.is_limited:p.category===f.cat)).filter(p=>!f.brand||p.brand===f.brand);
+  const promos=bannersOf('shop').map(b=>`<div class="promo" style="background-image:url('${esc(b.media_url)}')" ${b.link?`onclick="SHI.openLink(${js(b.link)})"`:''}><div><b>${esc(b.title||'')}</b>${b.subtitle?`<small>${esc(b.subtitle)}</small>`:''}</div></div>`).join('');
+  return `${promos?`<div class="promos">${promos}</div>`:''}
+   <div class="chips">${cats.map(c=>`<button class="chip ${f.cat===c?'on':''}" onclick="SHI.cat(${js(c)})">${esc(c)}</button>`).join('')}</div>
+   ${brands.length>1?`<div class="chips brands">${brands.map(b=>`<button class="chip ${f.brand===b?'on':''}" onclick="SHI.brand(${js(b)})">${esc(b)}</button>`).join('')}</div>`:''}
+   <div class="head-row"><b>КАТАЛОГ</b><span>${list.length} ${plural(list.length)}</span></div>
+   ${list.length?`<div class="grid">${list.map(tile).join('')}</div>`:'<div class="empty">Здесь пока пусто</div>'}`;
+}
+function plural(n){const a=n%10,b=n%100;return a===1&&b!==11?'товар':a>=2&&a<=4&&(b<12||b>14)?'товара':'товаров';}
+SHI.cat=c=>{S.filter.cat=c;render();}; SHI.brand=b=>{S.filter.brand=S.filter.brand===b?null:b;render();};
+// Текст сообщения менеджеру из карточки: товар, цена и ссылка на первое фото (Телеграм покажет его превью)
+function askText(p){ const ph=(p.photos||[])[0]; return 'Здравствуйте! Интересует: '+(p.brand?p.brand+' ':'')+p.title+'\n'+priceOf(p)+(ph?'\n'+ph:''); }
+function vProduct(id){
+  const p=S.products.find(x=>String(x.id)===id); if(!p) return '<div class="empty">Товар не найден</div>';
+  const items=[...(p.photos||[]).map(u=>({t:'i',u})),...(p.video?[{t:'v',u:p.video}]:[])];
+  const gal=items.map(x=>x.t==='i'?`<img src="${esc(x.u)}" alt="">`:`<video src="${esc(x.u)}" controls playsinline></video>`).join('');
+  const th=items.length>1?`<div class="thumbs">${items.map((x,i)=>`<button class="${i?'':'on'}" onclick="SHI.slide(${i})" style="${x.t==='i'?`background-image:url('${esc(x.u)}')`:'background:#222'}">${x.t==='v'?`<span class="play">${ic.play}</span>`:''}</button>`).join('')}</div>`:'';
+  setTimeout(()=>{const g=document.querySelector('.gallery'); if(g) g.onscroll=()=>{const i=Math.round(g.scrollLeft/g.clientWidth); const c=document.querySelector('.counter'); if(c) c.textContent=`${i+1} / ${items.length}`; document.querySelectorAll('.thumbs button').forEach((b,k)=>b.classList.toggle('on',k===i));};},0);
+  return `<div class="gwrap"><div class="gallery">${gal||'<div></div>'}</div>${items.length>1?`<span class="counter">1 / ${items.length}</span>`:''}</div>${th}
+   <section class="info"><span class="br">${esc(p.brand)}</span><h3>${esc(p.title)}</h3>
+   <div class="price">${esc(priceOf(p))}${p.is_limited?'<span class="tag">ЛИМИТКА</span>':''}</div>
+   ${p.description?`<div class="desc">${esc(p.description)}</div>`:''}</section>
+   <div class="sticky"><button class="btn full" onclick="SHI.writeTo(${js(askText(p))})">НАПИСАТЬ О ТОВАРЕ</button></div>`;
+}
+SHI.slide=i=>{const g=document.querySelector('.gallery'); g&&g.scrollTo({left:i*g.clientWidth,behavior:'smooth'});};
+// Экран «Чем можем помочь?»: кнопка «ПИШИ SHI» в канале и «Написать» в нижнем меню
+function vHelp(){
+  const ed=(S.settings.editor_username||'shiwithme');
+  const items=[
+    ['ПРЕДЛОЖИТЬ СОТРУДНИЧЕСТВО','Для брендов, блогеров, салонов и магазинов',"SHI.go('#/partners')"],
+    ['СВЯЗАТЬСЯ С МЕНЕДЖЕРОМ','Наличие, заказы и доставка',`SHI.writeTo(${js('Здравствуйте! Пишу из приложения SHI')})`],
+    ['НАПИСАТЬ В РЕДАКЦИЮ','Вопрос об издании или идея для SHI',`SHI.writeUser(${js(ed)},${js('Здравствуйте! Пишу в редакцию SHI')})`]];
+  return `<section class="page"><span class="sub">ПИШИ SHI</span><h2>Чем можем помочь?</h2>
+   <div class="help">${items.map(([t,d,a],i)=>`<button class="hitem ${i===1?'dark':''}" onclick="${a}"><span class="ht"><b>${t}</b><span>${d}</span></span><span class="ar">→</span></button>`).join('')}</div></section>`;
+}
+function vSearch(){
+  const q=S.q.trim().toLowerCase(); const list=q?S.products.filter(p=>(p.title+' '+(p.brand||'')+' '+(p.category||'')).toLowerCase().includes(q)):[];
+  return `<div class="search"><input id="q" placeholder="Бренд или товар" value="${esc(S.q)}" autocomplete="off"></div>
+   ${q?(list.length?`<div class="head-row"><b>НАЙДЕНО</b><span>${list.length}</span></div><div class="grid">${list.map(tile).join('')}</div>`:'<div class="empty">Ничего не нашли</div>'):''}`;
+}
+function parse(){ const h=(location.hash||'#/media').slice(2).split('/');
+  if(h[0]==='p') return {sec:'shop',view:'product',id:decodeURIComponent(h[1]||'')};
+  if(h[0]==='search') return {sec:'shop',view:'search'};
+  if(h[0]==='help') return {sec:'media',view:'help'};
+  if(h[0]==='media'&&h[1]==='about') return {sec:'media',view:'about'};
+  const sec=SECTIONS.some(s=>s[0]===h[0])?h[0]:'media'; return {sec,view:sec}; }
+function render(){
+  const r=parse(); chrome(r); const app=document.getElementById('app');
+  app.innerHTML= r.view==='media'?vMedia(): r.view==='about'?vPage('media'): r.view==='shop'?vShop(): r.view==='product'?vProduct(r.id): r.view==='search'?vSearch(): r.view==='help'?vHelp(): vPage(r.view);
+  if(r.view==='search'){ const i=document.getElementById('q'); i.focus(); i.oninput=()=>{S.q=i.value; const pos=i.selectionStart; render(); const n=document.getElementById('q'); n.setSelectionRange(pos,pos);}; }
+  if(r.view!=='search') window.scrollTo(0,0);
+}
+(function initialRoute(){ if(/^#\//.test(location.hash)) return; let s=null; try{ s=new URLSearchParams(location.search).get('s'); }catch(e){}
+  if(!s&&tg&&tg.initDataUnsafe) s=tg.initDataUnsafe.start_param; const ok=['media','shop','buyer','partners','about','help'];
+  if(s&&ok.includes(s)){ try{ history.replaceState(null,'',location.pathname+location.search+(s==='about'?'#/media/about':'#/'+s)); }catch(e){} } })();
+document.getElementById('btnSearch').onclick=()=>SHI.go('#/search');
+window.addEventListener('hashchange',render);
+load().then(render).catch(e=>{document.getElementById('app').innerHTML='<div class="empty">Не получилось загрузить каталог. Попробуйте открыть ещё раз.</div>';console.error(e);});
+})();
+</script>
+</body>
+</html>
