@@ -266,7 +266,7 @@ function openSheet(kind){ closeSheet(); const f=S.filter;
   if(kind==='cats'){ title='КАТЕГОРИИ';
     const rows=[`<button class="srow" onclick="SHI.pick('Все')"><span>${f.cat==='Все'?'<i class="dot"></i>':''}Все товары</span><span class="n">${S.products.length}</span></button>`];
     catTree().forEach((c,i)=>{ const on=f.cat===c.name;
-      if(c.subs.length){ rows.push(`<button class="srow ${on?'exp':''}" onclick="SHI.toggle(${i})" id="cr${i}"><span>${on?'<i class="dot"></i>':''}${esc(c.name)}</span><span class="n">${c.n} ${chev}</span></button>`);
+      if(c.subs.length>1){ rows.push(`<button class="srow ${on?'exp':''}" onclick="SHI.toggle(${i})" id="cr${i}"><span>${on?'<i class="dot"></i>':''}${esc(c.name)}</span><span class="n">${c.n} ${chev}</span></button>`);
         rows.push(`<div id="cs${i}" style="display:${on?'block':'none'}"><button class="srow sub" onclick="SHI.pick(${js(c.name)})"><span>${on&&!f.sub?'<i class="dot"></i>':''}Всё в разделе «${esc(c.name)}»</span><span class="n">${c.n}</span></button>${c.subs.map(([s,n])=>`<button class="srow sub" onclick="SHI.pick(${js(c.name)},${js(s)})"><span>${on&&f.sub===s?'<i class="dot"></i>':''}${esc(s)}</span><span class="n">${n}</span></button>`).join('')}</div>`);
       } else rows.push(`<button class="srow" onclick="SHI.pick(${js(c.name)})"><span>${on?'<i class="dot"></i>':''}${esc(c.name)}</span><span class="n">${c.n}</span></button>`);
     });
