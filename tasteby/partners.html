@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Для партнёров — TASTE BY</title>
+<script>try{if(!localStorage.getItem('tb_gate'))document.documentElement.classList.add('gated')}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main>
+  <section class="s" style="padding-bottom:40px">
+    <div class="wrap">
+      <div class="s-head" style="margin-bottom:0">
+        <div><div class="k">TASTE BY</div><h2>Партнёрам</h2></div>
+        <p>Площадка, где рекомендации авторов собраны в красивые витрины, а бренды находят тех, кто их правда любит.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="authors" style="padding-top:24px">
+    <div class="wrap">
+      <div class="duo">
+        <div class="box a"><div><div class="eyebrow" style="color:rgba(255,255,255,.6)">Авторам</div><h3 style="margin-top:22px">Своя витрина<br>за один вечер</h3><p>Для блогеров, экспертов и всех, у кого спрашивают «а что это у тебя».</p></div>
+          <a class="btn fill" href="signup.html?role=creator" style="align-self:flex-start">Стать автором</a></div>
+        <div class="box" style="background:var(--paper);border:1px solid var(--line)">
+          <div class="steps" style="grid-template-columns:1fr;border:0">
+            <div class="step" style="padding:0 0 22px;border:0"><h3 style="margin-top:0">Одна ссылка вместо сотни ответов</h3><p>tasteby.ru/ваше-имя: все рекомендации в одном месте, ссылка не меняется.</p></div>
+            <div class="step" style="padding:22px 0;border-left:0;border-top:1px solid var(--line)"><h3 style="margin-top:0">Свои категории и порядок</h3><p>Уход, макияж, образы, дом. Фото, ссылка на магазин и ваш комментарий к каждой вещи.</p></div>
+            <div class="step" style="padding:22px 0 0;border-left:0;border-top:1px solid var(--line)"><h3 style="margin-top:0">Видно, что интересно</h3><p>Счётчик переходов по каждой карточке. Скоро: партнёрские ссылки и доход с переходов.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="brands" style="padding-top:0">
+    <div class="wrap">
+      <div class="duo">
+        <div class="box b"><div><div class="eyebrow">Брендам</div><h3 style="margin-top:22px">Вас советуют<br>те, кто любит</h3><p>Авторы, которые уже пользуются вашими продуктами, и честные рекомендации вместо рекламных постов.</p></div>
+          <a class="btn" href="#apply" style="align-self:flex-start">Оставить заявку</a></div>
+        <div class="box" style="background:var(--paper);border:1px solid var(--line)">
+          <div class="steps" style="grid-template-columns:1fr;border:0">
+            <div class="step" style="padding:0 0 22px;border:0"><h3 style="margin-top:0">Подбор авторов</h3><p>Найдём тех, у кого ваш продукт уже в витрине или подходит по стилю.</p></div>
+            <div class="step" style="padding:22px 0;border-left:0;border-top:1px solid var(--line)"><h3 style="margin-top:0">Переходы и результат</h3><p>Видно, сколько людей перешли к вам из каждой витрины.</p></div>
+            <div class="step" style="padding:22px 0 0;border-left:0;border-top:1px solid var(--line)"><h3 style="margin-top:0">Подарки и коллаборации</h3><p>Отправка продукта авторам и совместные подборки.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="apply" style="padding-top:0">
+    <div class="wrap">
+      <div class="narrow">
+        <h2 class="t" style="margin-bottom:10px">Оставить <em>заявку</em></h2>
+        <p style="color:var(--muted);margin-bottom:28px">Расскажите о себе, мы свяжемся с вами.</p>
+        <form id="af" novalidate>
+          <div class="role-pick" role="radiogroup" aria-label="Кто вы">
+            <button type="button" data-k="brand" class="on" aria-pressed="true">Я бренд</button>
+            <button type="button" data-k="creator" aria-pressed="false">Я автор</button>
+          </div>
+          <label class="field"><span>Имя или название бренда</span><input name="name" required maxlength="120"></label>
+          <label class="field"><span>Как с вами связаться</span><input name="contact" required maxlength="200" placeholder="Telegram, телефон или email"></label>
+          <label class="field"><span>Сайт или соцсети</span><input name="link" maxlength="300" placeholder="Необязательно"></label>
+          <label class="field"><span>Сообщение</span><textarea name="message" maxlength="2000" placeholder="Необязательно"></textarea></label>
+          <label class="check"><input type="checkbox" name="consent" required><span>Согласен(на) на обработку данных по <a href="privacy.html" target="_blank">политике конфиденциальности</a></span></label>
+          <div class="msg" role="alert"></div>
+          <button class="btn fill wide" type="submit">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="site.js"></script>
+<script>
+TB.init();
+(() => {
+  const f = document.getElementById("af"), m = f.querySelector(".msg");
+  let kind = "brand";
+  f.querySelectorAll(".role-pick button").forEach((b) => b.onclick = () => {
+    kind = b.dataset.k;
+    f.querySelectorAll(".role-pick button").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); });
+  });
+  f.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(f));
+    if (!d.name.trim() || d.contact.trim().length < 3) return TB.msg(m, "Заполните имя и контакт");
+    if (!f.consent.checked) return TB.msg(m, "Нужно согласие с политикой");
+    const btn = f.querySelector("[type=submit]"); btn.disabled = true;
+    const { error } = await TB.sb.from("applications").insert({ kind, name: d.name.trim(), contact: d.contact.trim(), link: d.link.trim() || null, message: d.message.trim() || null });
+    btn.disabled = false;
+    if (error) return TB.msg(m, "Не получилось отправить, попробуйте ещё раз");
+    f.reset(); TB.msg(m, "Спасибо! Заявка отправлена, мы свяжемся с вами.", true);
+  });
+})();
+</script>
+</body>
+</html>

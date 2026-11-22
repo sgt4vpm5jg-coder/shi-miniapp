@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Кабинет — TASTE BY</title>
+<script>try{if(!localStorage.getItem('tb_gate'))document.documentElement.classList.add('gated')}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main class="page">
+  <div class="wrap"><div class="narrow" id="acc" style="max-width:640px">
+    <p class="lead">Загружаю…</p>
+  </div></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="site.js"></script>
+<script>
+TB.init();
+(async () => {
+  const box = document.getElementById("acc");
+  const { data: s } = await TB.sb.auth.getSession();
+  if (!s.session) return location.replace("login.html");
+  const u = s.session.user;
+  const { data: p } = await TB.sb.from("profiles").select("role,name,handle,created_at").eq("id", u.id).maybeSingle();
+  const role = p?.role || u.user_metadata?.role || "shopper";
+  const name = p?.name || u.user_metadata?.name || "";
+  const isNew = new URLSearchParams(location.search).has("new");
+  const next = {
+    creator: `<span class="soon">Следующий этап</span><h2 class="t" style="font-size:32px;margin-bottom:10px">Кабинет автора</h2><p style="color:var(--muted)">Здесь вы будете добавлять товары: фото, ссылку на магазин и свой комментарий, собирать категории и смотреть переходы. Ваша витрина откроется по адресу <b style="color:var(--ink)">tasteby.ru/${TB.esc(p?.handle || "")}</b>.</p>`,
+    shopper: `<span class="soon">Скоро</span><h2 class="t" style="font-size:32px;margin-bottom:10px">Избранное</h2><p style="color:var(--muted)">Здесь будут авторы и вещи, которые вы сохранили.</p>`,
+    brand: `<span class="soon">Скоро</span><h2 class="t" style="font-size:32px;margin-bottom:10px">Кабинет бренда</h2><p style="color:var(--muted)">Здесь будут авторы, которые рекомендуют ваши продукты, и переходы к вам. Пока можно <a href="partners.html#apply" style="text-decoration:underline">оставить заявку</a>.</p>`,
+  }[role];
+  box.innerHTML = `
+    <h1>${isNew ? "Добро пожаловать" : "Здравствуйте"}, ${TB.esc(name)}</h1>
+    <p class="lead">${isNew ? "Аккаунт создан." : "Это ваш кабинет."}</p>
+    <div class="card"><dl class="kv">
+      <dt>Кто вы</dt><dd>${TB.ROLE[role]}</dd>
+      <dt>Имя</dt><dd>${TB.esc(name)}</dd>
+      <dt>Email</dt><dd>${TB.esc(u.email)}</dd>
+      ${p?.handle ? `<dt>Витрина</dt><dd>tasteby.ru/${TB.esc(p.handle)}</dd>` : ""}
+    </dl></div>
+    <div class="card">${next}</div>
+    <p style="margin-top:28px"><button class="btn" data-logout>Выйти</button></p>`;
+  box.querySelector("[data-logout]").onclick = TB.logout;
+})();
+</script>
+</body>
+</html>

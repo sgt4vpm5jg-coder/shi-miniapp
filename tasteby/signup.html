@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Создать аккаунт — TASTE BY</title>
+<script>try{if(!localStorage.getItem('tb_gate'))document.documentElement.classList.add('gated')}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<main class="page">
+  <div class="wrap"><div class="narrow">
+    <h1>Создать аккаунт</h1>
+    <p class="lead">Выберите, кто вы.</p>
+    <div class="roles" role="radiogroup" aria-label="Кто вы">
+      <div class="role r1" data-role="shopper" role="radio" tabindex="0" aria-checked="false"><h3>Покупатель</h3><p>Покупки по вкусу, а не по ленте.</p></div>
+      <div class="role r2" data-role="creator" role="radio" tabindex="0" aria-checked="false"><h3>Автор</h3><p>Хороший вкус открывает возможности.</p></div>
+      <div class="role r3" data-role="brand" role="radio" tabindex="0" aria-checked="false"><h3>Бренд</h3><p>Вас продвигают те, кто вас любит.</p></div>
+    </div>
+    <form id="sf" novalidate hidden>
+      <label class="field"><span data-name-label>Имя</span><input name="name" required maxlength="80" autocomplete="name"></label>
+      <label class="field" data-handle hidden><span>Адрес витрины</span><div class="pre"><b>tasteby.ru/</b><input name="handle" maxlength="30" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="lena"></div><div class="hint">Латинские буквы, цифры, точка или _. Потом не меняется.</div></label>
+      <label class="field"><span>Email</span><input name="email" type="email" required maxlength="200" autocomplete="email" autocapitalize="off"></label>
+      <label class="field"><span>Пароль</span><input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password"><div class="hint">Не меньше 8 символов.</div></label>
+      <label class="check"><input type="checkbox" name="consent" required><span>Согласен(на) на обработку персональных данных по <a href="privacy.html" target="_blank">политике конфиденциальности</a></span></label>
+      <div class="msg" role="alert"></div>
+      <button class="btn fill wide" type="submit">Создать аккаунт</button>
+    </form>
+    <p class="alt">Уже есть аккаунт? <a href="login.html">Войти</a></p>
+  </div></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="site.js"></script>
+<script>
+TB.init();
+(() => {
+  const f = document.getElementById("sf"), m = f.querySelector(".msg");
+  let role = null;
+  const pick = (r) => {
+    role = r;
+    document.querySelectorAll(".role").forEach((el) => { const on = el.dataset.role === r; el.classList.toggle("on", on); el.setAttribute("aria-checked", on); });
+    f.hidden = false;
+    f.querySelector("[data-handle]").hidden = r !== "creator";
+    f.querySelector("[data-name-label]").textContent = r === "brand" ? "Название бренда" : "Имя";
+    m.className = "msg";
+  };
+  document.querySelectorAll(".role").forEach((el) => {
+    el.onclick = () => { pick(el.dataset.role); f.elements.namedItem("name").focus({ preventScroll: true }); f.scrollIntoView({ behavior: "smooth", block: "start" }); };
+    el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.click(); } };
+  });
+  const q = new URLSearchParams(location.search).get("role");
+  if (["shopper", "creator", "brand"].includes(q)) pick(q);
+  f.handle.addEventListener("input", () => { f.handle.value = f.handle.value.toLowerCase().replace(/[^a-z0-9_.]/g, ""); });
+
+  f.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(f));
+    if (!role) return TB.msg(m, "Выберите, кто вы");
+    if (!d.name.trim()) return TB.msg(m, "Укажите имя");
+    if (role === "creator" && !/^[a-z0-9][a-z0-9_.]{2,29}$/.test(d.handle)) return TB.msg(m, "Адрес витрины: от 3 латинских букв или цифр");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email.trim())) return TB.msg(m, "Проверьте email");
+    if (d.password.length < 8) return TB.msg(m, "Пароль от 8 символов");
+    if (!f.consent.checked) return TB.msg(m, "Нужно согласие с политикой");
+    const btn = f.querySelector("[type=submit]"); btn.disabled = true; btn.textContent = "Создаю…";
+    try {
+      const r = await fetch(TB.SB_URL + "/functions/v1/signup", {
+        method: "POST", headers: { "content-type": "application/json", apikey: TB.SB_KEY },
+        body: JSON.stringify({ role, name: d.name.trim(), handle: role === "creator" ? d.handle : null, email: d.email.trim(), password: d.password, consent: true, gate: TB.store.get(TB.GATE_KEY) || "" }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!j.ok) throw new Error(j.error || "Не получилось создать аккаунт");
+      const { error } = await TB.sb.auth.signInWithPassword({ email: d.email.trim(), password: d.password });
+      if (error) throw new Error("Аккаунт создан, войдите на странице входа");
+      location.href = "account.html?new=1";
+    } catch (err) {
+      TB.msg(m, err.message); btn.disabled = false; btn.textContent = "Создать аккаунт";
+    }
+  });
+})();
+</script>
+</body>
+</html>
