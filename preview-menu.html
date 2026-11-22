@@ -101,8 +101,6 @@ header.top{position:sticky;top:0;z-index:20;background:var(--white)}
 .srow .n svg{width:12px;height:12px;transition:transform .2s}
 .srow.exp .n svg{transform:rotate(180deg)}
 .srow.sub{padding:13px 20px 13px 36px;font-size:14px;font-weight:500;background:#FAF8F5}
-.srow.on{color:var(--ink)}
-.srow.on:before{content:"";position:absolute}
 .srow .dot{display:inline-block;width:6px;height:6px;border-radius:3px;background:var(--ink);margin-right:8px;vertical-align:middle}
 .letter{padding:16px 20px 6px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--grey);border-bottom:1px solid var(--line)}
 .head-row{display:flex;justify-content:space-between;align-items:baseline;padding:18px 20px 12px}
@@ -289,8 +287,8 @@ function openSheet(kind){ closeSheet(); const f=S.filter;
 }
 SHI.sheet=openSheet; SHI.close=closeSheet;
 SHI.toggle=i=>{ const d=document.getElementById('cs'+i), r=document.getElementById('cr'+i); const open=d.style.display==='none'; d.style.display=open?'block':'none'; r.classList.toggle('exp',open); };
-SHI.pick=(c,s)=>{ S.filter.cat=c; S.filter.sub=s||null; closeSheet(); render(); };
-SHI.brand=b=>{ S.filter.brand=b||null; closeSheet(); render(); };
+SHI.pick=(c,s)=>{ S.filter.cat=c; S.filter.sub=s||null; if(S.filter.brand&&!filtered().length) S.filter.brand=null; closeSheet(); render(); };
+SHI.brand=b=>{ S.filter.brand=b||null; if(b&&!filtered().length){ S.filter.cat='Все'; S.filter.sub=null; } closeSheet(); render(); };
 SHI.resetAll=()=>{ S.filter={cat:'Все',sub:null,brand:null}; closeSheet(); render(); };
 SHI.cat=c=>SHI.pick(c);
 // Текст сообщения менеджеру из карточки: товар, цена и ссылка на первое фото (Телеграм покажет его превью)
