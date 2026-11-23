@@ -102,6 +102,15 @@ header.top{position:sticky;top:0;z-index:20;background:var(--white)}
 .srow.exp .n svg{transform:rotate(180deg)}
 .srow.sub{padding:13px 20px 13px 36px;font-size:14px;font-weight:500;background:#FAF8F5}
 .srow .dot{display:inline-block;width:6px;height:6px;border-radius:3px;background:var(--ink);margin-right:8px;vertical-align:middle}
+/* 23.11 20:20: строки меню без точки, цифр и стрелок */
+.sheet .srow{font-weight:500;font-size:16px;padding:16px 20px;color:#3a3633}
+.sheet .srow.on{color:var(--ink)}
+.sheet .srow.on .lb{font-weight:700;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1.5px}
+.sheet .srow.sub{font-size:15px;padding:13px 20px 13px 36px;background:#FAF8F5}
+.srow .pm{position:relative;width:14px;height:14px;flex:none}
+.srow .pm::before,.srow .pm::after{content:"";position:absolute;left:0;right:0;top:50%;height:1.5px;margin-top:-.75px;background:currentColor;border-radius:1px;transition:transform .2s}
+.srow .pm::after{transform:rotate(90deg)}
+.srow.exp .pm::after{transform:rotate(0deg)}
 .letter{padding:16px 20px 6px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--grey);border-bottom:1px solid var(--line)}
 .head-row{display:flex;justify-content:space-between;align-items:baseline;padding:18px 20px 12px}
 .head-row b{font-family:var(--mono);font-size:12px;letter-spacing:.06em}
@@ -264,13 +273,21 @@ function closeSheet(){ const s=document.getElementById('sheet'), bg=document.get
 function openSheet(kind){ closeSheet(); const f=S.filter;
   let title, body, search='';
   if(kind==='cats'){ title='КАТЕГОРИИ';
-    const rows=[`<button class="srow" onclick="SHI.pick('Все')"><span>${f.cat==='Все'?'<i class="dot"></i>':''}Все товары</span><span class="n">${S.products.length}</span></button>`];
+    // 23.11 20:20 по её правке: без точки, без цифр и стрелок; выбранное жирным с подчёркиванием, раскрытие плюсом
+    const row=(on,cls,click,label,extra='')=>`<button class="srow ${cls} ${on?'on':''}" onclick="${click}"><span class="lb">${label}</span>${extra}</button>`;
+    const rows=[row(f.cat==='Все','',"SHI.pick('Все')",'Все товары')];
     catTree().forEach((c,i)=>{ const on=f.cat===c.name;
-      if(c.subs.length>1){ rows.push(`<button class="srow ${on?'exp':''}" onclick="SHI.toggle(${i})" id="cr${i}"><span>${on?'<i class="dot"></i>':''}${esc(c.name)}</span><span class="n">${c.n} ${chev}</span></button>`);
-        rows.push(`<div id="cs${i}" style="display:${on?'block':'none'}"><button class="srow sub" onclick="SHI.pick(${js(c.name)})"><span>${on&&!f.sub?'<i class="dot"></i>':''}Всё в разделе «${esc(c.name)}»</span><span class="n">${c.n}</span></button>${c.subs.map(([s,n])=>`<button class="srow sub" onclick="SHI.pick(${js(c.name)},${js(s)})"><span>${on&&f.sub===s?'<i class="dot"></i>':''}${esc(s)}</span><span class="n">${n}</span></button>`).join('')}</div>`);
-      } else rows.push(`<button class="srow" onclick="SHI.pick(${js(c.name)})"><span>${on?'<i class="dot"></i>':''}${esc(c.name)}</span><span class="n">${c.n}</span></button>`);
+      if(c.subs.length>1){ rows.push(`<button class="srow ${on?'exp on':''}" onclick="SHI.toggle(${i})" id="cr${i}"><span class="lb">${esc(c.name)}</span><i class="pm" aria-hidden="true"></i></button>`);
+        rows.push(`<div id="cs${i}" style="display:${on?'block':'none'}">${row(on&&!f.sub,'sub',`SHI.pick(${js(c.name)})`,'Смотреть всё')}${c.subs.map(([sb])=>row(on&&f.sub===sb,'sub',`SHI.pick(${js(c.name)},${js(sb)})`,esc(sb))).join('')}</div>`);
+      } else rows.push(row(on,'',`SHI.pick(${js(c.name)})`,esc(c.name)));
     });
-    const lim=S.products.filter(p=>p.is_limited).length; if(lim) rows.push(`<button class="srow" onclick="SHI.pick('Лимитки')"><span>${f.cat==='Лимитки'?'<i class="dot"></i>':''}Лимитки</span><span class="n">${lim}</span></button>`);
+    const lim=S.products.filter(p=>p.is_limited).length; if(lim) rows.push(row(f.cat==='Лимитки','',"SHI.pick('Лимитки')",'Лимитки'));
+    body=rows.join('');
+  } else { title='БРЕНДЫ А–Я';
+    search=`<div class="sh-search"><input id="bq" placeholder="Найти бренд" autocomplete="off"></div>`;
+    let last=''; const rows=[`<button class="srow ${!f.brand?'on':''}" data-b="" onclick="SHI.brand(null)"><span class="lb">Все бренды</span></button>`];
+    brandList().forEach(([b])=>{ const L=b[0].toUpperCase(); if(L!==last){ rows.push(`<div class="letter" data-l="${esc(L)}">${esc(L)}</div>`); last=L; }
+      rows.push(`<button class="srow ${f.brand===b?'on':''}" data-b="${esc(b.toLowerCase())}" onclick="SHI.brand(${js(b)})"><span class="lb">${esc(b)}</span></button>`); });
     body=rows.join('');
   } else { title='БРЕНДЫ А–Я';
     search=`<div class="sh-search"><input id="bq" placeholder="Найти бренд" autocomplete="off"></div>`;
