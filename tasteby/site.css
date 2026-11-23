@@ -270,3 +270,12 @@ footer.h-foot .logo{font-size:22px;margin-right:auto}
 .car .card{box-shadow:none;border:1px solid #dcdcdc}
 .car .card.c{border:6px solid #111;box-shadow:0 12px 30px rgba(0,0,0,.12)}
 .car-nav button{color:var(--ink)}
+
+/* 23.11 13:24: регистрация всегда на виду — кнопка в шапке и на первом экране */
+.hdr .hdr-reg{height:36px;padding:0 14px;font-size:13px;border-radius:18px}
+.h-cta{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 18px}
+.h-cta .btn{height:48px;padding:0 28px;border-radius:24px;font-size:15px}
+.h-cta small{color:var(--muted);font-size:13px}
+.h-login{font-size:14px;color:var(--muted);margin-top:12px}
+.h-login a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:419px){ .hdr .hdr-login:not(.in){display:none} .hdr .wrap{gap:12px} }

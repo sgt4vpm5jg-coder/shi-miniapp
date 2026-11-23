@@ -51,7 +51,8 @@ const TB = (() => {
       <a href="./" aria-label="TASTE BY, на главную">${LOGO}</a>
       <nav><a href="./#authors">Авторы</a><a href="./#recs">Рекомендации</a><a href="partners.html">Брендам и магазинам</a></nav>
       <span class="test-badge">Тест</span>
-      <a class="txt-link" data-auth href="login.html">Войти</a>
+      <a class="txt-link hdr-login" data-auth href="login.html">Войти</a>
+      <a class="btn fill hdr-reg" data-reg href="signup.html">Регистрация</a>
       <button class="txt-link burger-t" aria-label="Открыть меню">Меню</button></div>`;
     document.body.prepend(h);
     const m = document.createElement("div");
@@ -97,7 +98,8 @@ const TB = (() => {
   async function authUi() {
     const { data } = await sb.auth.getSession();
     if (!data.session) return;
-    document.querySelectorAll("[data-auth]").forEach((a) => { a.textContent = "Кабинет"; a.href = "account.html"; });
+    document.querySelectorAll("[data-auth]").forEach((a) => { a.textContent = "Кабинет"; a.href = "account.html"; a.classList.add("in"); });
+    document.querySelectorAll("[data-reg]").forEach((a) => a.remove());
     const acts = document.querySelector("[data-menu-acts]");
     if (acts) acts.innerHTML = `<a class="btn fill" href="account.html">Кабинет</a><button class="btn" data-logout>Выйти</button>`;
     document.querySelectorAll("[data-logout]").forEach((b) => (b.onclick = logout));
