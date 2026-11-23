@@ -1,7 +1,7 @@
 /* TASTE BY — общий стиль. Закрытый тест, этап 1 */
 :root{
-  --bg:#F6F2EC; --paper:#FFFDF9; --ink:#1A1714; --muted:#6E655C; --line:#E3DCD2; --pill:#EDE6DB;
-  --dark:#211B16; --dark2:#14110E; --err:#A2382B; --ok:#2F6B45;
+  --bg:#FFFFFF; --paper:#FFFFFF; --ink:#111111; --muted:#6B6B6B; --line:#E6E6E6; --pill:#F3F3F3;
+  --dark:#161616; --dark2:#0C0C0C; --err:#A2382B; --ok:#2F6B45;
   --serif:"Source Serif 4", "Times New Roman", Georgia, serif;
   --sans:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --wrap:1180px; --r:2px;
@@ -23,7 +23,7 @@ button,input,textarea,select{font:inherit;color:inherit}
 .logo i{font-weight:300;font-style:italic;font-size:1.06em}
 
 /* Шапка */
-.hdr{position:sticky;top:0;z-index:40;background:rgba(246,242,236,.92);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.hdr{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
 .hdr .wrap{height:68px;display:flex;align-items:center;gap:16px}
 .hdr .logo{margin-right:auto}
 .hdr.on-dark{background:transparent;border-color:transparent;color:#fff;position:absolute;left:0;right:0}
@@ -143,9 +143,10 @@ footer .fine{grid-column:1/-1;color:var(--muted);font-size:13px;margin-top:24px;
 .role{position:relative;text-align:center;color:#fff;padding:34px 24px;border-radius:2px;cursor:pointer;border:2px solid transparent;transition:transform .15s}
 .role h3{font:400 36px/1 var(--serif)}
 .role p{opacity:.88;margin-top:8px;font-size:15px}
-.role.r1{background:linear-gradient(160deg,#3c4a5c,#1c232d)}
-.role.r2{background:linear-gradient(160deg,#9aa061,#555a2b)}
-.role.r3{background:linear-gradient(160deg,#a8664a,#4f2b1c)}
+.role{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.role p{color:var(--muted)}
+.role.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.role.on p{color:rgba(255,255,255,.75)}
 .role.on{border-color:var(--ink);transform:scale(1.01)}
 .role.on::after{content:"✓";position:absolute;top:12px;right:14px;width:26px;height:26px;border-radius:50%;background:#fff;color:var(--ink);font:600 14px/26px var(--sans)}
 .role-pick{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
@@ -203,3 +204,61 @@ html.gated body>*:not(.gate){display:none!important}
   .kv dd{margin-bottom:10px}
   .card{padding:24px}
 }
+
+/* 23.11: главная по её видению — белая, «Находки со вкусом», популярные авторы, окно «Как работает» */
+.hdr .txt-link{font-size:15px;background:none;border:0;cursor:pointer;padding:8px 4px}
+.h-hero{text-align:center;padding:56px 0 34px}
+.h-hero h1{font:400 clamp(46px,9vw,104px)/.92 var(--serif);letter-spacing:-.02em;text-transform:uppercase}
+.h-hero p{color:#333;font-size:17px;max-width:30ch;margin:20px auto 18px}
+.how-link{font-size:15px;border:0;background:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.how-link em{font-family:var(--serif);font-style:italic;font-size:17px}
+.authors{position:relative;background:var(--dark);border-radius:18px;padding:34px 0 22px;margin-top:26px;color:#fff;overflow:hidden}
+.rings{position:absolute;top:-14px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18%;pointer-events:none}
+.rings i{width:16px;height:34px;border:3px solid #c9c9c9;border-radius:10px;background:transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.authors h2{font:600 15px/1 var(--sans);text-align:center;margin-bottom:22px}
+.car{position:relative;height:440px;touch-action:pan-y}
+.car .card{position:absolute;top:0;left:50%;width:230px;margin-left:-115px;background:#fff;color:var(--ink);border-radius:16px;padding:14px 12px 12px;text-align:center;transition:transform .35s ease,opacity .35s ease;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer}
+.car .card.c{border:6px solid #000;border-radius:26px;padding:12px 10px 12px}
+.car .av{width:40px;height:40px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;color:#fff;font:400 18px/1 var(--serif)}
+.car small{display:block;font:italic 300 13px/1.1 var(--serif);color:#444}
+.car b{display:block;font:italic 400 22px/1.15 var(--serif);margin:2px 0 1px}
+.car .cat{font-size:11px;color:var(--muted);margin-bottom:8px}
+.car .ph{aspect-ratio:4/5;background:#eee center/cover no-repeat;border-radius:4px}
+.car .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px}
+.car .row3 span{aspect-ratio:1;background:#f5f5f5 center/cover no-repeat;border-radius:3px}
+.car .go{display:block;margin-top:10px;border:1px solid var(--ink);border-radius:8px;padding:8px 6px;font-size:12px}
+.car .tag{position:absolute;top:10px;left:10px;font:500 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.car-nav{display:flex;justify-content:center;gap:28px;margin-top:6px}
+.car-nav button{background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;padding:6px 12px}
+.all-link{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;margin:22px 0 0;background:none;border:0;cursor:pointer}
+.recs{padding:56px 0 20px}
+.recs h2{font:400 32px/1.1 var(--serif);margin-bottom:14px}
+.r-tabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin-bottom:16px;font-size:15px}
+.r-tabs button{background:none;border:0;padding:0 0 10px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.r-tabs button.on{color:var(--ink);border-color:var(--ink)}
+.r-tabs a{margin-left:auto;padding-bottom:10px}
+.chips2{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:20px}
+.chips2::-webkit-scrollbar{display:none}
+.chips2 button{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font-size:14px;cursor:pointer}
+.chips2 button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.finds{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 14px}
+.find .ph{aspect-ratio:1;background:#f5f5f5 center/cover no-repeat;border-radius:2px;margin-bottom:10px}
+.find b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.find .by{font:italic 300 14px/1.3 var(--serif);color:#444;margin:3px 0 6px}
+.find .shop{font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.empty2{color:var(--muted);padding:20px 0}
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.45)}
+.modal.open{display:flex}
+.modal .sheet{background:#fff;width:min(560px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:20px 24px 28px;position:relative}
+.modal .x{position:absolute;top:14px;left:16px;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer}
+.modal h2{font:400 32px/1.1 var(--serif);margin:46px 0 8px}
+.modal .lead{color:#333;margin-bottom:6px}
+.modal section{border-top:1px solid var(--line);padding:20px 0 4px;margin-top:16px}
+.modal h3{font:400 24px/1.15 var(--serif);margin-bottom:8px}
+.modal p{color:#333;font-size:15px;margin-bottom:14px}
+footer.h-foot{border-top:1px solid var(--line);padding:22px 0;margin-top:40px}
+footer.h-foot .wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap;font-size:15px}
+footer.h-foot .logo{font-size:22px;margin-right:auto}
+@media (min-width:721px){ .modal{align-items:center} .modal .sheet{border-radius:18px} .car .card{width:260px;margin-left:-130px} .car{height:480px} }
+@media (max-width:980px){ .finds{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:720px){ .h-hero{padding:40px 0 26px} .authors{margin-left:-6px;margin-right:-6px} .car{height:420px} .car .card{width:200px;margin-left:-100px} .car b{font-size:20px} }
