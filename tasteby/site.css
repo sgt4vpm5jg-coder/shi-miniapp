@@ -278,7 +278,7 @@ footer.h-foot .logo{font-size:22px;margin-right:auto}
 .h-cta small{color:var(--muted);font-size:13px}
 .h-login{font-size:14px;color:var(--muted);margin-top:12px}
 .h-login a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
-@media (max-width:419px){ .hdr .hdr-login:not(.in){display:none} .hdr .wrap{gap:12px} }
+@media (max-width:419px){ .hdr .wrap{gap:12px} }
 
 .hdr .wrap>a:first-child{margin-right:auto}
 
@@ -351,3 +351,20 @@ footer.h-foot small{color:var(--muted);font-size:13px;width:100%}
 .d-cta p{color:#333;font-size:15px;margin-bottom:16px}
 @media (min-width:721px){ .d-grid{grid-template-columns:repeat(4,1fr)} }
 .exc small{white-space:normal;line-height:1.25;overflow:visible}
+
+/* 23.11 15:02: шапка и меню по её макету: «Войти» и значок меню, разделы раскрываются */
+.hdr .hdr-login{font-size:15px}
+.hdr .burger{margin-right:-10px}
+.menu .panel.m2{width:min(440px,100vw);background:#fff;padding:16px 24px 32px;display:block}
+.m-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.m-top .logo{font-size:26px}
+.menu .m2 .x{width:38px;height:38px;margin:0;border:1px solid var(--line);border-radius:50%;font-size:20px;display:grid;place-items:center;background:#fff}
+.m2 details{border-bottom:1px solid var(--line)}
+.m2 summary{list-style:none;cursor:pointer;padding:18px 0;font:600 18px/1.2 var(--sans);display:flex;align-items:center;gap:8px}
+.m2 summary::-webkit-details-marker{display:none}
+.m2 summary::before{content:"\25B6";font-size:12px;width:14px;flex:none}
+.m2 details[open] summary::before{content:"\25BC"}
+.m2 .m-b{padding:0 0 20px}
+.m2 .m-b p{font-size:16px;line-height:1.5;color:#222;margin-bottom:14px}
+.m2 .m-b .btn{display:flex;width:max-content;max-width:100%;margin-top:10px}
+.m-contact{display:inline-block;margin-top:20px;font-size:15px;text-decoration:underline;text-underline-offset:3px}

@@ -52,34 +52,31 @@ const TB = (() => {
       <nav><a href="./#examples">Примеры</a><a href="./#how">Как работает</a><a href="partners.html">Брендам и магазинам</a></nav>
       <span class="test-badge">Тест</span>
       <a class="txt-link hdr-login" data-auth href="login.html">Войти</a>
-      <a class="btn fill hdr-reg" data-reg href="signup.html">Регистрация</a>
-      <button class="txt-link burger-t" aria-label="Открыть меню">Меню</button></div>`;
+      <button class="burger" aria-label="Открыть меню"><span></span></button></div>`;
     document.body.prepend(h);
     const m = document.createElement("div");
     m.className = "menu";
-    m.innerHTML = `<div class="shade"></div><aside class="panel" aria-label="Меню">
-      <button class="x" aria-label="Закрыть">×</button>
-      <h6>Авторам</h6>
-      <a class="it" href="partners.html#authors">Как это устроено</a>
-      <a class="it" href="partners.html#authors">Своя витрина</a>
-      <a class="it" href="partners.html#authors">Партнёрские ссылки<small>скоро</small></a>
-      <a class="it" href="signup.html?role=creator">Стать автором</a>
-      <h6>Брендам</h6>
-      <a class="it" href="partners.html#brands">Сотрудничество</a>
-      <a class="it" href="partners.html#apply">Оставить заявку</a>
-      <h6>Покупателям</h6>
-      <a class="it" href="./#examples">Примеры страниц</a>
-      <a class="it" href="demo.html">Демо-страница автора</a>
-      <a class="it" href="signup.html?role=shopper">Создать аккаунт</a>
-      <h6>Общее</h6>
-      <a class="it" href="./#how">Как работает TASTE by</a>
-      <a class="it" href="privacy.html">Политика конфиденциальности</a>
-      <div class="acts" data-menu-acts><a class="btn fill" href="signup.html">Создать аккаунт</a><a class="btn" href="login.html">Войти</a></div>
+    // Меню по её макету 23.11 15:02: разделы раскрываются
+    m.innerHTML = `<div class="shade"></div><aside class="panel m2" aria-label="Меню">
+      <div class="m-top"><a href="./" aria-label="На главную">${LOGO}</a><button class="x" aria-label="Закрыть">×</button></div>
+      <details><summary>Для авторов</summary><div class="m-b">
+        <p>Вас часто спрашивают, что за помада на вас или где вы нашли ту самую сумку? Соберите свои рекомендации в подборки и делитесь одной ссылкой на свою страницу.</p>
+        <a class="btn fill big" href="signup.html" data-reg>Создать страницу</a>
+        <a class="btn big" href="./#examples">Посмотреть примеры страниц</a></div></details>
+      <details><summary>Для читателей</summary><div class="m-b">
+        <p>Откройте страницу автора, чей вкус вам близок. Посмотрите его подборки, найдите вещь, которую заметили у него, или откройте для себя что-то новое.</p>
+        <a class="btn fill big" href="demo.html">Смотреть подборки</a></div></details>
+      <details><summary>Для брендов и магазинов</summary><div class="m-b">
+        <p>Если вы хотите обсудить сотрудничество с TASTE by или предложить продукт для знакомства авторам, напишите нам и расскажите о себе.</p>
+        <a class="btn fill big" href="partners.html#apply">Связаться с нами</a></div></details>
+      <details><summary>О TASTE by</summary><div class="m-b">
+        <p>Ваша личная страница с рекомендациями. Здесь можно собрать любимые средства, вещи и находки, которыми хочется поделиться, а ещё — посмотреть, что выбирают люди, чей вкус вам близок.</p></div></details>
+      <a class="m-contact" href="partners.html#apply">Связаться с нами</a>
     </aside>`;
     document.body.appendChild(m);
     const open = () => { m.classList.add("open"); document.body.style.overflow = "hidden"; };
     const close = () => { m.classList.remove("open"); document.body.style.overflow = ""; };
-    $(".burger-t", h).onclick = open;
+    $(".burger", h).onclick = open;
     $(".x", m).onclick = close; $(".shade", m).onclick = close;
     m.addEventListener("click", (e) => { if (e.target.closest("a")) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
