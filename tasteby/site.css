@@ -350,3 +350,4 @@ footer.h-foot small{color:var(--muted);font-size:13px;width:100%}
 .d-cta h2{font:400 28px/1.15 var(--serif);margin-bottom:8px}
 .d-cta p{color:#333;font-size:15px;margin-bottom:16px}
 @media (min-width:721px){ .d-grid{grid-template-columns:repeat(4,1fr)} }
+.exc small{white-space:normal;line-height:1.25;overflow:visible}
