@@ -279,3 +279,5 @@ footer.h-foot .logo{font-size:22px;margin-right:auto}
 .h-login{font-size:14px;color:var(--muted);margin-top:12px}
 .h-login a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:419px){ .hdr .hdr-login:not(.in){display:none} .hdr .wrap{gap:12px} }
+
+.hdr .wrap>a:first-child{margin-right:auto}
