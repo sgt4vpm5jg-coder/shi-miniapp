@@ -49,7 +49,7 @@ const TB = (() => {
     h.className = "hdr" + (opts.dark ? " on-dark" : "");
     h.innerHTML = `<div class="wrap">
       <a href="./" aria-label="TASTE BY, на главную">${LOGO}</a>
-      <nav><a href="./#authors">Авторы</a><a href="./#recs">Рекомендации</a><a href="partners.html">Брендам и магазинам</a></nav>
+      <nav><a href="./#examples">Примеры</a><a href="./#how">Как работает</a><a href="partners.html">Брендам и магазинам</a></nav>
       <span class="test-badge">Тест</span>
       <a class="txt-link hdr-login" data-auth href="login.html">Войти</a>
       <a class="btn fill hdr-reg" data-reg href="signup.html">Регистрация</a>
@@ -68,8 +68,8 @@ const TB = (() => {
       <a class="it" href="partners.html#brands">Сотрудничество</a>
       <a class="it" href="partners.html#apply">Оставить заявку</a>
       <h6>Покупателям</h6>
-      <a class="it" href="./#authors">Авторы</a>
-      <a class="it" href="./#recs">Рекомендации</a>
+      <a class="it" href="./#examples">Примеры страниц</a>
+      <a class="it" href="demo.html">Демо-страница автора</a>
       <a class="it" href="signup.html?role=shopper">Создать аккаунт</a>
       <h6>Общее</h6>
       <a class="it" href="./#how">Как работает TASTE by</a>
@@ -88,7 +88,7 @@ const TB = (() => {
     const f = document.createElement("footer");
     f.innerHTML = `<div class="wrap">
       <div>${LOGO}<p style="color:var(--muted);margin-top:14px;max-width:30ch">Рекомендации людей, чьему вкусу вы доверяете.</p></div>
-      <div><h6>Покупателям</h6><a href="./#authors">Авторы</a><a href="./#recs">Рекомендации</a><a href="signup.html?role=shopper">Создать аккаунт</a></div>
+      <div><h6>Покупателям</h6><a href="./#examples">Примеры страниц</a><a href="demo.html">Демо</a><a href="signup.html?role=shopper">Создать аккаунт</a></div>
       <div><h6>Партнёрам</h6><a href="partners.html#authors">Авторам</a><a href="partners.html#brands">Брендам</a><a href="partners.html#apply">Заявка</a></div>
       <div><h6>Общее</h6><a href="./#how">Как работает TASTE by</a><a href="privacy.html">Политика конфиденциальности</a><a href="login.html">Войти</a></div>
       <div class="fine"><span>© ${new Date().getFullYear()} TASTE BY</span><span>Закрытый тест. Сайт не индексируется.</span></div></div>`;

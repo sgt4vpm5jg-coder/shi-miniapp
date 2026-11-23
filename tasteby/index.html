@@ -9,154 +9,100 @@
 <script>try{if(!localStorage.getItem('tb_gate'))document.documentElement.classList.add('gated')}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=12">
+<link rel="stylesheet" href="site.css?v=13">
 </head>
 <body>
 <main>
   <section class="h-hero">
     <div class="wrap">
       <h1>Находки<br>со вкусом</h1>
-      <p>Рекомендации любимых авторов со ссылками на магазины.</p>
+      <h2 class="h-sub">Ваша личная страница с рекомендациями</h2>
+      <p>Соберите на TASTE by всё, что советуете и предлагаете. Добавьте прямые ссылки на любимые вещи, услуги и другие находки.</p>
       <form class="claim" data-reg id="claim" novalidate>
-        <label class="claim-in"><span>tasteby.ru/</span><input name="handle" placeholder="ваше имя" maxlength="30" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Адрес вашей витрины"></label>
+        <label class="claim-in"><span>tasteby.ru/</span><input name="handle" placeholder="ваш ник" maxlength="30" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Ник для адреса вашей страницы"></label>
         <button class="btn fill" type="submit">Создать страницу</button>
       </form>
-      <button class="how-link" data-how>Как работает <em>TASTE by</em></button>
       <div class="h-login" data-reg>Уже есть аккаунт? <a href="login.html">Войти</a></div>
     </div>
   </section>
 
-  <section id="authors">
+  <section class="ex-sec" id="examples">
     <div class="wrap">
-      <div class="authors">
-        <div class="rings" aria-hidden="true"><i></i><i></i><i></i></div>
-        <h2>Популярные авторы</h2>
-        <div class="car" id="car" aria-roledescription="карусель"></div>
-        <div class="car-nav"><button data-prev aria-label="Предыдущий автор">‹</button><button data-next aria-label="Следующий автор">›</button></div>
-      </div>
-      <button class="all-link" data-all>▸ Смотреть все рекомендации</button>
+      <hr class="sep">
+      <h2 class="sec-t">Как может выглядеть ваша страница</h2>
+      <div class="ex" id="ex"></div>
+      <a class="btn ex-go" id="exGo" href="demo.html?u=alina">Посмотреть страницу автора</a>
     </div>
   </section>
 
-  <section class="recs" id="recs">
+  <section class="how" id="how">
     <div class="wrap">
-      <h2>Рекомендации</h2>
-      <div class="r-tabs"><button class="on" data-tab="all">Для вас</button><button data-tab="subs">Подписки</button><a href="signup.html?role=creator">+ Создать подборку</a></div>
-      <div class="chips2" id="chips"></div>
-      <div class="finds" id="finds"></div>
+      <hr class="sep">
+      <div class="in">
+        <h2>Как работает <span class="logo"><b>taste</b><i>by</i></span></h2>
+        <h3>По вашему списку</h3>
+        <p>Отправьте ссылку на свою страницу <b>tasteby.ru/ваш-ник</b> или добавьте её в профиль любой соцсети. Друзья и подписчики найдут вашу подборку и смогут сразу перейти по нужной ссылке.</p>
+        <ol>
+          <li><b>Выберите ник.</b> Он станет частью адреса вашей страницы.</li>
+          <li><b>Добавьте рекомендации.</b> Соберите вещи с фото и ссылками на магазины. Можно добавить и ссылку на соцсеть.</li>
+          <li><b>Поделитесь страницей.</b> Поставьте ссылку в профиль и обновляйте рекомендации, когда захотите.</li>
+        </ol>
+        <p>Подписчики могут открыть подборку без регистрации.</p>
+        <a class="btn fill big" data-reg href="signup.html">Создать свою страницу</a>
+      </div>
     </div>
   </section>
 </main>
 
-<div class="modal" id="how" role="dialog" aria-modal="true" aria-labelledby="howT">
-  <div class="sheet">
-    <button class="x" data-close aria-label="Закрыть">×</button>
-    <h2 id="howT">Что такое TASTE by</h2>
-    <p class="lead">Находки и рекомендации людей, чьему вкусу вы доверяете.</p>
-    <section><h3>Смотреть находки</h3><p>Открывайте подборки и переходите на сайты магазинов без аккаунта. С аккаунтом можно сохранять авторов и вещи.</p><a class="btn" href="signup.html?role=shopper">Создать аккаунт</a></section>
-    <section><h3>Авторам</h3><p>Соберите рекомендации и ссылки на одной странице. Поделитесь ею с подписчиками.</p><a class="btn" href="signup.html?role=creator">Создать подборку</a></section>
-    <section><h3>Брендам и магазинам</h3><p>Зарегистрируйте профиль партнёра, чтобы представить бренд и предложить товары авторам.</p><a class="btn" href="signup.html?role=brand">Регистрация партнёра</a></section>
-  </div>
-</div>
+<footer class="h-foot"><div class="wrap">
+  <a href="./" class="logo" aria-label="TASTE BY"><b>taste</b><i>by</i></a>
+  <a href="partners.html">Брендам и магазинам</a>
+  <a href="demo.html">Демо</a>
+  <small>Закрытый тест</small>
+</div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="site.js?v=12"></script>
+<script src="site.js?v=13"></script>
+<script src="demo-data.js?v=13"></script>
 <script>
-TB.init();
+TB.init({ noFooter: true });
 (() => {
-  // Примеры для теста: настоящие авторы и их витрины появятся на втором этапе
-  const M = "../media/kbeauty/";
-  const A = [
-    { n: "Лена", cat: "Красота", c: "#b8576a", ph: "biodance_collagen_2", p: ["biodance_caviar_pdrn_1", "vt_caffeine_patch_p1", "torriden_eye_patch_p2"] },
-    { n: "Катя", cat: "Уход", c: "#2f6f64", ph: "vt_brush_serum_p2", p: ["vt_scalp_shampoo_p1", "drbio_seasalt_shampoo_1", "dralthea_345_p1"] },
-    { n: "Аня", cat: "Макияж", c: "#5b4a8a", ph: "c24_360_eye_p2", p: ["cu_skinfit_cushion_p1", "cu_vitaminu_cushion_p2", "arencia_pdrn_p1"] },
-    { n: "Маша", cat: "Тело", c: "#3d6b8f", ph: "drbio_eco_soothing_cream_s3", p: ["drbio_soothing_lotion_1", "drbio_eco_moist_lotion_p1", "drbio_ttide_cream_2"] },
-  ];
-  const F = [
-    { t: "Патчи с коллагеном", a: "Лена", cat: "Красота", img: "biodance_collagen_1", shop: "Biodance" },
-    { t: "Сыворотка для кожи головы", a: "Катя", cat: "Уход", img: "vt_brush_serum_p1", shop: "VT" },
-    { t: "Кушон Vitamin U", a: "Аня", cat: "Макияж", img: "cu_vitaminu_cushion_p1", shop: "CU" },
-    { t: "Охлаждающий крем", a: "Маша", cat: "Тело", img: "drbio_eco_soothing_cream_s2", shop: "Dr.Bio" },
-    { t: "Крем для век с PDRN", a: "Аня", cat: "Уход", img: "c24_360_eye_p1", shop: "Centellian24" },
-    { t: "Патчи с кофеином", a: "Лена", cat: "Красота", img: "vt_caffeine_patch_p2", shop: "VT" },
-    { t: "Шампунь с морской солью", a: "Катя", cat: "Уход", img: "drbio_seasalt_shampoo_2", shop: "Dr.Bio" },
-    { t: "Лосьон для лица и тела", a: "Маша", cat: "Тело", img: "drbio_soothing_lotion_2", shop: "Dr.Bio" },
-  ];
-  const bg = (n) => `background-image:url('${M}${n}.jpg')`;
-  const car = document.getElementById("car");
-  car.innerHTML = A.map((a, i) => `<div class="card" data-i="${i}" role="group" aria-label="Автор ${TB.esc(a.n)}">
-    <span class="tag">пример</span>
-    <div class="av" style="background:${a.c}">${TB.esc(a.n[0])}</div>
-    <small>taste by</small><b>${TB.esc(a.n)}</b><div class="cat">${TB.esc(a.cat)}</div>
-    <div class="ph" style="${bg(a.ph)}"></div>
-    <div class="row3">${a.p.map((p) => `<span style="${bg(p)}"></span>`).join("")}</div>
-    <span class="go">Перейти на страницу автора</span></div>`).join("");
-  const cards = [...car.children];
+  // Три примера страниц: выбранный в центре в рамке телефона
+  const A = TB_DEMO.authors;
+  const ex = TB.$("#ex"), exGo = TB.$("#exGo");
   let cur = 1;
-  const place = () => {
-    const w = car.clientWidth || Math.min(window.innerWidth, 1180) - 48;
-    cards.forEach((c, i) => {
-      let d = i - cur; if (d > A.length / 2) d -= A.length; if (d < -A.length / 2) d += A.length;
-      const shift = Math.min(w * 0.36, 190);
-      c.classList.toggle("c", d === 0);
-      c.style.transform = `translateX(${d * shift}px) scale(${d === 0 ? 1 : 0.8})`;
-      c.style.opacity = Math.abs(d) > 1 ? 0 : d === 0 ? 1 : 0.9;
-      c.style.zIndex = 10 - Math.abs(d);
-      c.style.pointerEvents = Math.abs(d) > 1 ? "none" : "auto";
-    });
-    const h = cards[cur].offsetHeight; if (h) car.style.height = h + 8 + "px";
+  const bg = (u) => `background-image:url('${u}')`;
+  const card = (a, mid) => {
+    const items = a.cols[0].items;
+    return `<button class="exc${mid ? " mid" : ""}" data-u="${a.u}" aria-label="Пример: ${TB.esc(a.n)}">
+      <b>${TB.esc(a.n)}</b>
+      <span class="ph" style="${bg(items[0].img)}"></span>
+      <span class="row3">${items.slice(1, 4).map((x) => `<i style="${bg(x.img)}"></i>`).join("")}</span>
+      <small>${TB.esc(a.col)}</small></button>`;
   };
-  const go = (k) => { cur = (cur + k + A.length) % A.length; place(); };
-  document.querySelector("[data-prev]").onclick = () => go(-1);
-  document.querySelector("[data-next]").onclick = () => go(1);
-  let x0 = null, swiped = false;
-  car.addEventListener("pointerdown", (e) => { x0 = e.clientX; swiped = false; });
-  car.addEventListener("pointerup", (e) => { if (x0 !== null && Math.abs(e.clientX - x0) > 40) { swiped = true; go(e.clientX < x0 ? 1 : -1); } x0 = null; });
-  cards.forEach((c, i) => c.addEventListener("click", () => {
-    if (swiped) return;
-    if (i !== cur) { cur = i; place(); return; }
-    // Страница автора будет на втором этапе, пока показываем его находки
-    filterBy(A[i].n); TB.$("#recs").scrollIntoView({ behavior: "smooth" });
-  }));
-  window.addEventListener("resize", place);
-  if (window.ResizeObserver) new ResizeObserver(place).observe(car);
-  place();
-
-  // Рекомендации: чипы категорий, «Подписки» после входа
-  const cats = ["Все", ...new Set(F.map((f) => f.cat)), "Дом", "Мода"];
-  let cat = "Все", author = null, tab = "all";
-  const chips = TB.$("#chips"), finds = TB.$("#finds");
-  const setTab = () => document.querySelectorAll("[data-tab]").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
   const render = () => {
-    chips.innerHTML = cats.map((c) => `<button class="${c === cat && !author ? "on" : ""}" data-c="${TB.esc(c)}">${TB.esc(c)}</button>`).join("") + (author ? `<button class="on" data-c="Все">taste by ${TB.esc(author)} ×</button>` : "");
-    if (tab === "subs") { finds.innerHTML = `<p class="empty2">Подписывайтесь на авторов, и их новые находки появятся здесь. Для этого нужен <a href="signup.html?role=shopper" style="text-decoration:underline">аккаунт</a>.</p>`; return; }
-    const list = F.filter((f) => (cat === "Все" || f.cat === cat) && (!author || f.a === author));
-    finds.innerHTML = list.length ? list.map((f) => `<div class="find"><div class="ph" style="${bg(f.img)}"></div><b>${TB.esc(f.t)}</b><div class="by">taste by ${TB.esc(f.a)}</div><span class="shop">На сайт ${TB.esc(f.shop)} ↗</span></div>`).join("") : `<p class="empty2">В этой категории пока нет находок.</p>`;
+    const order = [(cur + A.length - 1) % A.length, cur, (cur + 1) % A.length];
+    ex.innerHTML = order.map((i) => card(A[i], i === cur)).join("");
+    exGo.href = "demo.html?u=" + A[cur].u;
   };
-  const filterBy = (a) => { author = a; cat = "Все"; tab = "all"; setTab(); render(); };
-  chips.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; cat = b.dataset.c; author = null; render(); });
-  document.querySelectorAll("[data-tab]").forEach((b) => b.onclick = () => { tab = b.dataset.tab; setTab(); render(); });
-  document.querySelector("[data-all]").onclick = () => { author = null; cat = "Все"; tab = "all"; setTab(); render(); TB.$("#recs").scrollIntoView({ behavior: "smooth" }); };
+  let x0 = null, swiped = false;
+  ex.addEventListener("click", (e) => {
+    if (swiped) { swiped = false; return; }
+    const b = e.target.closest(".exc"); if (!b) return;
+    const i = A.findIndex((a) => a.u === b.dataset.u);
+    if (i === cur) location.href = "demo.html?u=" + A[i].u; else { cur = i; render(); }
+  });
+  ex.addEventListener("pointerdown", (e) => { x0 = e.clientX; swiped = false; });
+  ex.addEventListener("pointerup", (e) => { if (x0 !== null && Math.abs(e.clientX - x0) > 40) { swiped = true; cur = (cur + (e.clientX < x0 ? 1 : -1) + A.length) % A.length; render(); } x0 = null; });
   render();
 
-  // Как в Linktree: вводишь имя и сразу регистрируешься автором с этим адресом
+  // Вводишь ник и идёшь на регистрацию, там человек выбирает, кто он: покупатель, автор или бренд
   const claim = TB.$("#claim");
   if (claim) {
     const inp = claim.handle;
     inp.addEventListener("input", () => { inp.value = inp.value.toLowerCase().replace(/[^a-z0-9_.]/g, ""); });
-    // Дальше человек сам выбирает, кто он: покупатель, автор или бренд (адрес сохраняется для автора)
     claim.addEventListener("submit", (e) => { e.preventDefault(); const v = inp.value.trim(); location.href = "signup.html" + (v ? "?handle=" + encodeURIComponent(v) : ""); });
   }
-
-  // Окно «Как работает TASTE by»
-  const modal = TB.$("#how");
-  const openHow = () => { modal.classList.add("open"); document.body.style.overflow = "hidden"; };
-  const closeHow = () => { modal.classList.remove("open"); document.body.style.overflow = ""; if (location.hash === "#how") history.replaceState(null, "", location.pathname + location.search); };
-  document.querySelectorAll("[data-how]").forEach((b) => b.onclick = openHow);
-  modal.addEventListener("click", (e) => { if (e.target === modal || e.target.closest("[data-close]")) closeHow(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeHow(); });
-  const hashHow = () => { if (location.hash === "#how") openHow(); };
-  window.addEventListener("hashchange", hashHow); hashHow();
 })();
 </script>
 </body>
