@@ -291,3 +291,9 @@ footer.h-foot .logo{font-size:22px;margin-right:auto}
 .claim .btn{height:52px;border-radius:26px;font-size:15px}
 .claim small{color:var(--muted);font-size:13px;text-align:center}
 .claim small a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+
+/* 23.11 13:38: поле и кнопка в одну строку, не на всю ширину (как на её макете) */
+.claim{flex-direction:row;align-items:center;justify-content:center;gap:6px;max-width:400px;margin:4px auto 20px}
+.claim-in{flex:1;min-width:0;height:40px;border-radius:20px;padding:0 12px}
+.claim-in span,.claim-in input{font-size:14px}
+.claim .btn{height:40px;border-radius:20px;font-size:13px;padding:0 16px;flex:none}
