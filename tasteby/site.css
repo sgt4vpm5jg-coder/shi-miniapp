@@ -264,7 +264,7 @@ footer.h-foot .logo{font-size:22px;margin-right:auto}
 @media (max-width:720px){ .h-hero{padding:40px 0 26px} .authors{margin-left:-6px;margin-right:-6px} .car .card{width:200px;margin-left:-100px} .car b{font-size:20px} }
 
 /* 23.11 13:02 она выбрала вариант без чёрного: белый блок авторов, рамки серые, центральная карточка в рамке телефона */
-.authors{background:#fff;color:var(--ink);border-radius:0;padding:10px 0 6px;margin-top:10px;overflow:visible}
+.authors{background:#fff;color:var(--ink);border-radius:0;padding:10px 0 14px;margin-top:10px;overflow:hidden}
 .authors .rings{display:none}
 .authors h2{font:400 15px/1 var(--sans);color:#333;margin-bottom:18px}
 .car .card{box-shadow:none;border:1px solid #dcdcdc}
