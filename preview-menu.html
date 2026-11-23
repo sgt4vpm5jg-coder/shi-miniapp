@@ -289,12 +289,6 @@ function openSheet(kind){ closeSheet(); const f=S.filter;
     brandList().forEach(([b])=>{ const L=b[0].toUpperCase(); if(L!==last){ rows.push(`<div class="letter" data-l="${esc(L)}">${esc(L)}</div>`); last=L; }
       rows.push(`<button class="srow ${f.brand===b?'on':''}" data-b="${esc(b.toLowerCase())}" onclick="SHI.brand(${js(b)})"><span class="lb">${esc(b)}</span></button>`); });
     body=rows.join('');
-  } else { title='БРЕНДЫ А–Я';
-    search=`<div class="sh-search"><input id="bq" placeholder="Найти бренд" autocomplete="off"></div>`;
-    let last=''; const rows=[`<button class="srow" data-b="" onclick="SHI.brand(null)"><span>${!f.brand?'<i class="dot"></i>':''}Все бренды</span><span class="n">${S.products.length}</span></button>`];
-    brandList().forEach(([b,n])=>{ const L=b[0].toUpperCase(); if(L!==last){ rows.push(`<div class="letter" data-l="${esc(L)}">${esc(L)}</div>`); last=L; }
-      rows.push(`<button class="srow" data-b="${esc(b.toLowerCase())}" onclick="SHI.brand(${js(b)})"><span>${f.brand===b?'<i class="dot"></i>':''}${esc(b)}</span><span class="n">${n}</span></button>`); });
-    body=rows.join('');
   }
   const bg=document.createElement('div'); bg.className='sheet-bg'; bg.id='sheetBg'; bg.onclick=closeSheet;
   const s=document.createElement('div'); s.className='sheet'; s.id='sheet';
