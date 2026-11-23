@@ -281,3 +281,13 @@ footer.h-foot .logo{font-size:22px;margin-right:auto}
 @media (max-width:419px){ .hdr .hdr-login:not(.in){display:none} .hdr .wrap{gap:12px} }
 
 .hdr .wrap>a:first-child{margin-right:auto}
+
+/* 23.11 13:31: поле адреса витрины на первом экране, как в Linktree */
+.claim{display:flex;flex-direction:column;align-items:stretch;gap:10px;max-width:420px;margin:6px auto 18px}
+.claim-in{display:flex;align-items:center;height:52px;border:1px solid #cfcfcf;border-radius:12px;background:#fff;padding:0 14px;cursor:text}
+.claim-in:focus-within{border-color:var(--ink)}
+.claim-in span{color:var(--muted);font-size:16px;white-space:nowrap}
+.claim-in input{flex:1;min-width:0;border:0;outline:none;font-size:16px;height:100%;padding-left:2px;background:transparent}
+.claim .btn{height:52px;border-radius:26px;font-size:15px}
+.claim small{color:var(--muted);font-size:13px;text-align:center}
+.claim small a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
