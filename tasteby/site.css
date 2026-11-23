@@ -216,7 +216,7 @@ html.gated body>*:not(.gate){display:none!important}
 .rings{position:absolute;top:-14px;left:0;right:0;display:flex;justify-content:space-between;padding:0 18%;pointer-events:none}
 .rings i{width:16px;height:34px;border:3px solid #c9c9c9;border-radius:10px;background:transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
 .authors h2{font:600 15px/1 var(--sans);text-align:center;margin-bottom:22px}
-.car{position:relative;height:440px;touch-action:pan-y}
+.car{position:relative;height:440px;touch-action:pan-y;transition:height .3s}
 .car .card{position:absolute;top:0;left:50%;width:230px;margin-left:-115px;background:#fff;color:var(--ink);border-radius:16px;padding:14px 12px 12px;text-align:center;transition:transform .35s ease,opacity .35s ease;box-shadow:0 10px 30px rgba(0,0,0,.35);cursor:pointer}
 .car .card.c{border:6px solid #000;border-radius:26px;padding:12px 10px 12px}
 .car .av{width:40px;height:40px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;color:#fff;font:400 18px/1 var(--serif)}
@@ -259,6 +259,6 @@ html.gated body>*:not(.gate){display:none!important}
 footer.h-foot{border-top:1px solid var(--line);padding:22px 0;margin-top:40px}
 footer.h-foot .wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap;font-size:15px}
 footer.h-foot .logo{font-size:22px;margin-right:auto}
-@media (min-width:721px){ .modal{align-items:center} .modal .sheet{border-radius:18px} .car .card{width:260px;margin-left:-130px} .car{height:480px} }
+@media (min-width:721px){ .modal{align-items:center} .modal .sheet{border-radius:18px} .car .card{width:260px;margin-left:-130px} }
 @media (max-width:980px){ .finds{grid-template-columns:repeat(2,1fr)} }
-@media (max-width:720px){ .h-hero{padding:40px 0 26px} .authors{margin-left:-6px;margin-right:-6px} .car{height:420px} .car .card{width:200px;margin-left:-100px} .car b{font-size:20px} }
+@media (max-width:720px){ .h-hero{padding:40px 0 26px} .authors{margin-left:-6px;margin-right:-6px} .car .card{width:200px;margin-left:-100px} .car b{font-size:20px} }

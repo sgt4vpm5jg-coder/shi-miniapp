@@ -9,7 +9,7 @@
 <script>try{if(!localStorage.getItem('tb_gate'))document.documentElement.classList.add('gated')}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=5">
+<link rel="stylesheet" href="site.css?v=6">
 </head>
 <body>
 <main>
@@ -55,7 +55,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="site.js?v=5"></script>
+<script src="site.js?v=6"></script>
 <script>
 TB.init();
 (() => {
@@ -89,7 +89,7 @@ TB.init();
   const cards = [...car.children];
   let cur = 1;
   const place = () => {
-    const w = car.clientWidth;
+    const w = car.clientWidth || Math.min(window.innerWidth, 1180) - 48;
     cards.forEach((c, i) => {
       let d = i - cur; if (d > A.length / 2) d -= A.length; if (d < -A.length / 2) d += A.length;
       const shift = Math.min(w * 0.36, 190);
@@ -99,6 +99,7 @@ TB.init();
       c.style.zIndex = 10 - Math.abs(d);
       c.style.pointerEvents = Math.abs(d) > 1 ? "none" : "auto";
     });
+    const h = cards[cur].offsetHeight; if (h) car.style.height = h + 8 + "px";
   };
   const go = (k) => { cur = (cur + k + A.length) % A.length; place(); };
   document.querySelector("[data-prev]").onclick = () => go(-1);
@@ -113,6 +114,7 @@ TB.init();
     filterBy(A[i].n); TB.$("#recs").scrollIntoView({ behavior: "smooth" });
   }));
   window.addEventListener("resize", place);
+  if (window.ResizeObserver) new ResizeObserver(place).observe(car);
   place();
 
   // Рекомендации: чипы категорий, «Подписки» после входа
