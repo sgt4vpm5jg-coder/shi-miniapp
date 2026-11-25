@@ -122,6 +122,11 @@ nav.bottom svg{width:22px;height:22px}
 .search{padding:14px 20px 0}
 .search input{width:100%;font:500 15px var(--sans);padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;outline:none}
 .loading{padding:60px 20px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--grey)}
+/* 25.11: блоки SHI BUYER с текстом в абзацах и своей кнопкой */
+.cards.one{grid-template-columns:1fr}
+.card span{white-space:pre-line}
+.cards.one .card span{font-size:13px;line-height:19px}
+.card .cbtn{margin-top:6px;align-self:flex-start}
 /* 25.11: меню каталога из макета preview-menu (она утвердила): Категории и Бренды А–Я */
 .navbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 20px 0}
 .nbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:13px 14px;border:1px solid rgba(26,23,21,.22);border-radius:10px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left}
@@ -253,11 +258,13 @@ function vMedia(){
 }
 function vPage(key){
   const p=S.pages[key]||{}; const b=bannersOf(key==='media'?'media':key)[key==='media'?1:0]||bannersOf(key)[0];
-  const cards=(p.cards||[]).map(c=>`<div class="card ${c.dark?'dark':''}"><b>${esc(c.title)}</b><span>${esc(c.text)}</span></div>`).join('');
+  // 25.11: у блока может быть своя кнопка (пишет менеджеру), длинные тексты в один столбец
+  const cards=(p.cards||[]).map(c=>`<div class="card ${c.dark?'dark':''}"><b>${esc(c.title)}</b><span>${esc(c.text)}</span>${c.button?`<button class="btn ${c.dark?'white':''} cbtn" onclick="SHI.writeTo(${js('Здравствуйте! '+(c.title||p.title||'SHI')+'. '+c.button+'.')})">${esc(c.button)}</button>`:''}</div>`).join('');
+  const oneCol=(p.cards||[]).some(c=>(c.text||'').length>140);
   const btns=(p.buttons||[]).map((x,i)=>`<button class="btn ${i?'line':''}" onclick="${x.url?`SHI.openLink(${js(x.url)})`:`SHI.writeTo(${js('Здравствуйте! Пишу из '+(p.title||'SHI'))})`}">${esc(x.label||'НАПИСАТЬ')}</button>`).join('');
   return `${b?`<div class="banner" ${b.media_type==='image'?`style="background-image:url('${esc(b.media_url)}')"`:''}>${b.media_type==='video'?media(b):''}</div>`:''}
    <section class="page"><h2>${esc(p.title||'')}</h2>${p.subtitle?`<div class="sub">${esc(p.subtitle)}</div>`:''}
-   ${p.body?`<div class="body">${esc(p.body)}</div>`:''}${cards?`<div class="cards">${cards}</div>`:''}${btns?`<div class="row" style="margin-top:6px">${btns}</div>`:''}</section>`;
+   ${p.body?`<div class="body">${esc(p.body)}</div>`:''}${cards?`<div class="cards ${oneCol?'one':''}">${cards}</div>`:''}${btns?`<div class="row" style="margin-top:6px">${btns}</div>`:''}</section>`;
 }
 function tile(p){ const ph=(p.photos||[])[0];
   return `<button class="tile" onclick="SHI.go(${js('#/p/'+p.id)})"><div class="ph" ${ph?`style="background-image:url('${esc(ph)}')"`:''}>${p.is_limited?'<span class="tag">ЛИМИТКА</span>':''}</div>

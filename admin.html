@@ -198,13 +198,13 @@ function editPage(k){
   const draw=()=>{
    body().innerHTML=`<div class="box"><label>Заголовок</label><input type="text" id="p_t" value="${esc(p.title)}"><label>Подзаголовок</label><input type="text" id="p_s" value="${esc(p.subtitle)}">
     <label>Текст</label><textarea id="p_b" style="min-height:180px">${esc(p.body)}</textarea>
-    <label>Блоки (как SHI BUYER и SHI BUYER VIP)</label>${p.cards.map((x,i)=>`<div class="cardrow"><input type="text" data-ct="${i}" value="${esc(x.title)}" placeholder="Заголовок"><input type="text" data-cx="${i}" value="${esc(x.text)}" placeholder="Текст"><label style="margin:0"><input type="checkbox" data-cd="${i}" ${x.dark?'checked':''}> тёмный</label><button class="btn line" data-cr="${i}">✕</button></div>`).join('')}<button class="btn line" id="addc">+ блок</button>
+    <label>Блоки (как SHI BUYER и SHI BUYER VIP)</label>${p.cards.map((x,i)=>`<div class="cardrow"><input type="text" data-ct="${i}" value="${esc(x.title)}" placeholder="Заголовок"><textarea data-cx="${i}" placeholder="Текст" style="min-height:90px">${esc(x.text)}</textarea><label style="margin:0"><input type="checkbox" data-cd="${i}" ${x.dark?'checked':''}> тёмный</label><button class="btn line" data-cr="${i}">✕</button><input type="text" data-cb="${i}" value="${esc(x.button||'')}" placeholder="Кнопка блока (пусто = без кнопки)" style="grid-column:1/-1"></div>`).join('')}<button class="btn line" id="addc">+ блок</button>
     <label>Кнопки (пустая ссылка = написать вам в Телеграм)</label>${p.buttons.map((x,i)=>`<div class="cardrow"><input type="text" data-bl="${i}" value="${esc(x.label)}" placeholder="Текст кнопки"><input type="url" data-bu="${i}" value="${esc(x.url)}" placeholder="https://…"><span></span><button class="btn line" data-br="${i}">✕</button></div>`).join('')}<button class="btn line" id="addb">+ кнопка</button>
     <div class="bar"><div style="display:flex;gap:8px"><button class="btn" id="save">Сохранить</button><button class="btn line" id="cancel">Назад</button></div></div></div>`;
    const read=()=>{p.title=v('p_t');p.subtitle=v('p_s');p.body=v('p_b');
-    p.cards=p.cards.map((x,i)=>({title:body().querySelector(`[data-ct="${i}"]`).value,text:body().querySelector(`[data-cx="${i}"]`).value,dark:body().querySelector(`[data-cd="${i}"]`).checked}));
+    p.cards=p.cards.map((x,i)=>{const c={title:body().querySelector(`[data-ct="${i}"]`).value,text:body().querySelector(`[data-cx="${i}"]`).value,dark:body().querySelector(`[data-cd="${i}"]`).checked};const bt=body().querySelector(`[data-cb="${i}"]`).value.trim();if(bt)c.button=bt;return c;});
     p.buttons=p.buttons.map((x,i)=>({label:body().querySelector(`[data-bl="${i}"]`).value,url:body().querySelector(`[data-bu="${i}"]`).value}));};
-   document.getElementById('addc').onclick=()=>{read();p.cards.push({title:'',text:'',dark:false});draw();};
+   document.getElementById('addc').onclick=()=>{read();p.cards.push({title:'',text:'',dark:false,button:''});draw();};
    document.getElementById('addb').onclick=()=>{read();p.buttons.push({label:'',url:''});draw();};
    body().querySelectorAll('[data-cr]').forEach(b=>b.onclick=()=>{read();p.cards.splice(+b.dataset.cr,1);draw();});
    body().querySelectorAll('[data-br]').forEach(b=>b.onclick=()=>{read();p.buttons.splice(+b.dataset.br,1);draw();});
