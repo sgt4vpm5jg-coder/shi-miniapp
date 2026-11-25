@@ -122,6 +122,42 @@ nav.bottom svg{width:22px;height:22px}
 .search{padding:14px 20px 0}
 .search input{width:100%;font:500 15px var(--sans);padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;outline:none}
 .loading{padding:60px 20px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--grey)}
+/* 25.11: меню каталога из макета preview-menu (она утвердила): Категории и Бренды А–Я */
+.navbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 20px 0}
+.nbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;padding:13px 14px;border:1px solid rgba(26,23,21,.22);border-radius:10px;background:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left}
+.nbtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nbtn svg{flex:0 0 12px;width:12px;height:12px}
+.nbtn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.fchips{display:flex;gap:6px;flex-wrap:wrap;padding:10px 20px 0}
+.fchip{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 10px;border-radius:14px;background:var(--pill)}
+.fchip b{font-weight:400;opacity:.6}
+.fchip.reset{background:none;text-decoration:underline;font-weight:500;color:var(--grey)}
+.sheet-bg{position:fixed;inset:0;background:rgba(26,23,21,.45);z-index:40;opacity:0;transition:opacity .2s}
+.sheet-bg.open{opacity:1}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,100%);width:100%;max-width:520px;max-height:84vh;background:#fff;border-radius:16px 16px 0 0;z-index:41;display:flex;flex-direction:column;transition:transform .25s ease}
+.sheet.open{transform:translate(-50%,0)}
+.sh-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 14px;border-bottom:1px solid var(--line)}
+.sh-head b{font-family:var(--mono);font-size:13px;letter-spacing:.08em}
+.sh-head button{font-size:22px;line-height:1;width:32px;height:32px}
+.sh-search{padding:12px 20px 4px}
+.sh-search input{width:100%;font:500 15px var(--sans);padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:var(--cream);outline:none}
+.sh-body{overflow-y:auto;padding:0 0 calc(24px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:15px 20px;border-bottom:1px solid var(--line);text-align:left;font-size:15px;font-weight:600}
+.srow .n{color:var(--grey);font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px}
+.srow .n svg{width:12px;height:12px;transition:transform .2s}
+.srow.exp .n svg{transform:rotate(180deg)}
+.srow.sub{padding:13px 20px 13px 36px;font-size:14px;font-weight:500;background:#FAF8F5}
+.srow .dot{display:inline-block;width:6px;height:6px;border-radius:3px;background:var(--ink);margin-right:8px;vertical-align:middle}
+/* 23.11 20:20: строки меню без точки, цифр и стрелок */
+.sheet .srow{font-weight:500;font-size:16px;padding:16px 20px;color:#3a3633}
+.sheet .srow.on{color:var(--ink)}
+.sheet .srow.on .lb{font-weight:700;text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1.5px}
+.sheet .srow.sub{font-size:15px;padding:13px 20px 13px 36px;background:#FAF8F5}
+.srow .pm{position:relative;width:14px;height:14px;flex:none}
+.srow .pm::before,.srow .pm::after{content:"";position:absolute;left:0;right:0;top:50%;height:1.5px;margin-top:-.75px;background:currentColor;border-radius:1px;transition:transform .2s}
+.srow .pm::after{transform:rotate(90deg)}
+.srow.exp .pm::after{transform:rotate(0deg)}
+.letter{padding:16px 20px 6px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--grey);border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -150,7 +186,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const js=x=>esc(JSON.stringify(x));
 const priceOf=p=>p.price==null&&p.is_gift?'Подарок к покупке':rub(p.price);
 const rub=n=>n==null?'Цена по запросу':Number(n).toLocaleString('ru-RU').replace(/ | /g,' ')+' ₽';
-const S={products:[],banners:[],pages:{},settings:{},filter:{cat:'Все',brand:null},q:''};
+const S={products:[],banners:[],pages:{},settings:{},filter:{cat:'Все',sub:null,brand:null},q:''};
 
 async function rest(table,params){
   const r=await fetch(`${cfg.supabaseUrl}/rest/v1/${table}?${params}`,{headers:{apikey:cfg.supabaseAnonKey,Authorization:'Bearer '+cfg.supabaseAnonKey}});
@@ -226,20 +262,59 @@ function vPage(key){
 function tile(p){ const ph=(p.photos||[])[0];
   return `<button class="tile" onclick="SHI.go(${js('#/p/'+p.id)})"><div class="ph" ${ph?`style="background-image:url('${esc(ph)}')"`:''}>${p.is_limited?'<span class="tag">ЛИМИТКА</span>':''}</div>
    <span class="br">${esc(p.brand)}</span><span class="nm">${esc(p.title)}</span><span class="pr">${esc(priceOf(p))}</span></button>`; }
+const ORDER=['Макияж','Уход','K-beauty','Волосы','Тело','Парфюм','Аксессуары','Наборы']; const rank=c=>{const i=ORDER.indexOf(c);return i<0?99:i;};
+const chev='<svg viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function catTree(){ const m={}; S.products.forEach(p=>{ if(!p.category) return; const c=m[p.category]||(m[p.category]={n:0,subs:{}}); c.n++; if(p.subcategory) c.subs[p.subcategory]=(c.subs[p.subcategory]||0)+1; });
+  return Object.keys(m).sort((a,b)=>rank(a)-rank(b)).map(k=>({name:k,n:m[k].n,subs:Object.entries(m[k].subs).sort((a,b)=>b[1]-a[1])})); }
+function brandList(){ const m={}; S.products.forEach(p=>{ if(p.brand) m[p.brand]=(m[p.brand]||0)+1; }); return Object.entries(m).sort((a,b)=>a[0].localeCompare(b[0],'ru',{sensitivity:'base'})); }
+function filtered(){ const f=S.filter; return S.products.filter(p=>f.cat==='Все'||(f.cat==='Лимитки'?p.is_limited:p.category===f.cat)).filter(p=>!f.sub||p.subcategory===f.sub).filter(p=>!f.brand||p.brand===f.brand); }
 function vShop(){
-  const ORDER=['Макияж','Уход','K-beauty','Волосы','Тело','Парфюм','Аксессуары','Наборы']; const rank=c=>{const i=ORDER.indexOf(c);return i<0?99:i;};
-  const cats=['Все',...[...new Set(S.products.map(p=>p.category).filter(Boolean))].sort((a,b)=>rank(a)-rank(b)),...(S.products.some(p=>p.is_limited)?['Лимитки']:[])];
-  const brands=[...new Set(S.products.map(p=>p.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-  const f=S.filter; let list=S.products.filter(p=>f.cat==='Все'||(f.cat==='Лимитки'?p.is_limited:p.category===f.cat)).filter(p=>!f.brand||p.brand===f.brand);
+  const f=S.filter; const list=filtered();
+  const catLabel=f.cat==='Все'?'Категории':(f.sub?f.cat+' · '+f.sub:f.cat);
   const promos=bannersOf('shop').map(b=>`<div class="promo" style="background-image:url('${esc(b.media_url)}')" ${b.link?`onclick="SHI.openLink(${js(b.link)})"`:''}><div><b>${esc(b.title||'')}</b>${b.subtitle?`<small>${esc(b.subtitle)}</small>`:''}</div></div>`).join('');
+  const chips=[]; if(f.cat!=='Все') chips.push(`<button class="fchip" onclick="SHI.pick('Все')">${esc(catLabel)} <b>✕</b></button>`); if(f.brand) chips.push(`<button class="fchip" onclick="SHI.brand(null)">${esc(f.brand)} <b>✕</b></button>`);
+  if(chips.length>1) chips.push(`<button class="fchip reset" onclick="SHI.resetAll()">Сбросить всё</button>`);
   return `${promos?`<div class="promos">${promos}</div>`:''}
-   <div class="chips">${cats.map(c=>`<button class="chip ${f.cat===c?'on':''}" onclick="SHI.cat(${js(c)})">${esc(c)}</button>`).join('')}</div>
-   ${brands.length>1?`<div class="chips brands">${brands.map(b=>`<button class="chip ${f.brand===b?'on':''}" onclick="SHI.brand(${js(b)})">${esc(b)}</button>`).join('')}</div>`:''}
+   <div class="navbar"><button class="nbtn ${f.cat!=='Все'?'on':''}" onclick="SHI.sheet('cats')"><span>${esc(catLabel)}</span>${chev}</button>
+    <button class="nbtn ${f.brand?'on':''}" onclick="SHI.sheet('brands')"><span>${esc(f.brand||'Бренды А–Я')}</span>${chev}</button></div>
+   ${chips.length?`<div class="fchips">${chips.join('')}</div>`:''}
    <div class="head-row"><b>КАТАЛОГ</b><span>${list.length} ${plural(list.length)}</span></div>
-   ${list.length?`<div class="grid">${list.map(tile).join('')}</div>`:'<div class="empty">Здесь пока пусто</div>'}`;
+   ${list.length?`<div class="grid">${list.map(tile).join('')}</div>`:`<div class="empty">Здесь пока пусто<br><br><button class="btn line" onclick="SHI.resetAll()">Показать все товары</button></div>`}`;
 }
 function plural(n){const a=n%10,b=n%100;return a===1&&b!==11?'товар':a>=2&&a<=4&&(b<12||b>14)?'товара':'товаров';}
-SHI.cat=c=>{S.filter.cat=c;render();}; SHI.brand=b=>{S.filter.brand=S.filter.brand===b?null:b;render();};
+function closeSheet(){ const s=document.getElementById('sheet'), bg=document.getElementById('sheetBg'); if(!s) return; s.classList.remove('open'); bg.classList.remove('open'); setTimeout(()=>{s.remove();bg.remove();},220); document.body.style.overflow=''; }
+function openSheet(kind){ closeSheet(); const f=S.filter;
+  let title, body, search='';
+  if(kind==='cats'){ title='КАТЕГОРИИ';
+    // 23.11 20:20 по её правке: без точки, без цифр и стрелок; выбранное жирным с подчёркиванием, раскрытие плюсом
+    const row=(on,cls,click,label,extra='')=>`<button class="srow ${cls} ${on?'on':''}" onclick="${click}"><span class="lb">${label}</span>${extra}</button>`;
+    const rows=[row(f.cat==='Все','',"SHI.pick('Все')",'Все товары')];
+    catTree().forEach((c,i)=>{ const on=f.cat===c.name;
+      if(c.subs.length>1){ rows.push(`<button class="srow ${on?'exp on':''}" onclick="SHI.toggle(${i})" id="cr${i}"><span class="lb">${esc(c.name)}</span><i class="pm" aria-hidden="true"></i></button>`);
+        rows.push(`<div id="cs${i}" style="display:${on?'block':'none'}">${row(on&&!f.sub,'sub',`SHI.pick(${js(c.name)})`,'Смотреть всё')}${c.subs.map(([sb])=>row(on&&f.sub===sb,'sub',`SHI.pick(${js(c.name)},${js(sb)})`,esc(sb))).join('')}</div>`);
+      } else rows.push(row(on,'',`SHI.pick(${js(c.name)})`,esc(c.name)));
+    });
+    const lim=S.products.filter(p=>p.is_limited).length; if(lim) rows.push(row(f.cat==='Лимитки','',"SHI.pick('Лимитки')",'Лимитки'));
+    body=rows.join('');
+  } else { title='БРЕНДЫ А–Я';
+    search=`<div class="sh-search"><input id="bq" placeholder="Найти бренд" autocomplete="off"></div>`;
+    let last=''; const rows=[`<button class="srow ${!f.brand?'on':''}" data-b="" onclick="SHI.brand(null)"><span class="lb">Все бренды</span></button>`];
+    brandList().forEach(([b])=>{ const L=b[0].toUpperCase(); if(L!==last){ rows.push(`<div class="letter" data-l="${esc(L)}">${esc(L)}</div>`); last=L; }
+      rows.push(`<button class="srow ${f.brand===b?'on':''}" data-b="${esc(b.toLowerCase())}" onclick="SHI.brand(${js(b)})"><span class="lb">${esc(b)}</span></button>`); });
+    body=rows.join('');
+  }
+  const bg=document.createElement('div'); bg.className='sheet-bg'; bg.id='sheetBg'; bg.onclick=closeSheet;
+  const s=document.createElement('div'); s.className='sheet'; s.id='sheet';
+  s.innerHTML=`<div class="sh-head"><b>${title}</b><button aria-label="Закрыть" onclick="SHI.close()">×</button></div>${search}<div class="sh-body">${body}</div>`;
+  document.body.append(bg,s); document.body.style.overflow='hidden'; requestAnimationFrame(()=>{bg.classList.add('open');s.classList.add('open');});
+  const q=document.getElementById('bq'); if(q) q.oninput=()=>{ const v=q.value.trim().toLowerCase(); s.querySelectorAll('.srow[data-b]').forEach(r=>{ r.style.display=!v||r.dataset.b.includes(v)||r.dataset.b===''&&!v?'':'none'; }); s.querySelectorAll('.letter').forEach(l=>{ let n=l.nextElementSibling, vis=false; while(n&&!n.classList.contains('letter')){ if(n.style.display!=='none') vis=true; n=n.nextElementSibling; } l.style.display=vis?'':'none'; }); };
+}
+SHI.sheet=openSheet; SHI.close=closeSheet;
+SHI.toggle=i=>{ const d=document.getElementById('cs'+i), r=document.getElementById('cr'+i); const open=d.style.display==='none'; d.style.display=open?'block':'none'; r.classList.toggle('exp',open); };
+SHI.pick=(c,s)=>{ S.filter.cat=c; S.filter.sub=s||null; if(S.filter.brand&&!filtered().length) S.filter.brand=null; closeSheet(); render(); };
+SHI.brand=b=>{ S.filter.brand=b||null; if(b&&!filtered().length){ S.filter.cat='Все'; S.filter.sub=null; } closeSheet(); render(); };
+SHI.resetAll=()=>{ S.filter={cat:'Все',sub:null,brand:null}; closeSheet(); render(); };
+SHI.cat=c=>SHI.pick(c);
 // Текст сообщения менеджеру из карточки: товар, цена и ссылка на первое фото (Телеграм покажет его превью)
 function askText(p){ const ph=(p.photos||[])[0]; return 'Здравствуйте! Интересует: '+(p.brand?p.brand+' ':'')+p.title+'\n'+priceOf(p)+(ph?'\n'+ph:''); }
 function vProduct(id){
@@ -286,7 +361,7 @@ function render(){
   if(!s&&tg&&tg.initDataUnsafe) s=tg.initDataUnsafe.start_param; const ok=['media','shop','buyer','partners','about','help'];
   if(s&&ok.includes(s)){ try{ history.replaceState(null,'',location.pathname+location.search+(s==='about'?'#/media/about':'#/'+s)); }catch(e){} } })();
 document.getElementById('btnSearch').onclick=()=>SHI.go('#/search');
-window.addEventListener('hashchange',render);
+window.addEventListener('hashchange',()=>{closeSheet();render();});
 load().then(render).catch(e=>{document.getElementById('app').innerHTML='<div class="empty">Не получилось загрузить каталог. Попробуйте открыть ещё раз.</div>';console.error(e);});
 })();
 </script>
