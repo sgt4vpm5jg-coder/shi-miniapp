@@ -122,6 +122,13 @@ nav.bottom svg{width:22px;height:22px}
 .search{padding:14px 20px 0}
 .search input{width:100%;font:500 15px var(--sans);padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;outline:none}
 .loading{padding:60px 20px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--grey)}
+/* 25.11 вечер: плашки SHI BUYER и шторка с описанием */
+.card.tilec{min-height:118px;justify-content:space-between;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.card.tilec.dark{color:#fff}
+.card.tilec b{font-size:13px;line-height:17px}
+.card.tilec small{font-family:var(--mono);font-size:10px;letter-spacing:.08em;opacity:.7}
+.cdesc{padding:16px 20px 4px;white-space:pre-line;font-size:14px;line-height:21px}
+.cact{padding:14px 20px 8px}
 /* 25.11: блоки SHI BUYER с текстом в абзацах и своей кнопкой */
 .cards.one{grid-template-columns:1fr}
 .card span{white-space:pre-line}
@@ -258,9 +265,12 @@ function vMedia(){
 }
 function vPage(key){
   const p=S.pages[key]||{}; const b=bannersOf(key==='media'?'media':key)[key==='media'?1:0]||bannersOf(key)[0];
-  // 25.11: у блока может быть своя кнопка (пишет менеджеру), длинные тексты в один столбец
-  const cards=(p.cards||[]).map(c=>`<div class="card ${c.dark?'dark':''}"><b>${esc(c.title)}</b><span>${esc(c.text)}</span>${c.button?`<button class="btn ${c.dark?'white':''} cbtn" onclick="SHI.writeTo(${js('Здравствуйте! '+(c.title||p.title||'SHI')+'. '+c.button+'.')})">${esc(c.button)}</button>`:''}</div>`).join('');
-  const oneCol=(p.cards||[]).some(c=>(c.text||'').length>140);
+  // 25.11 вечер по её просьбе: блоки с кнопкой показываем плашками с названием, по нажатию шторка с описанием и кнопкой
+  S.curPage=p;
+  const cards=(p.cards||[]).map((c,i)=>c.button
+    ?`<button class="card tilec ${c.dark?'dark':''}" onclick="SHI.cardInfo(${i})"><b>${esc(c.title)}</b><small>ПОДРОБНЕЕ →</small></button>`
+    :`<div class="card ${c.dark?'dark':''}"><b>${esc(c.title)}</b><span>${esc(c.text)}</span></div>`).join('');
+  const oneCol=(p.cards||[]).some(c=>!c.button&&(c.text||'').length>140);
   const btns=(p.buttons||[]).map((x,i)=>`<button class="btn ${i?'line':''}" onclick="${x.url?`SHI.openLink(${js(x.url)})`:`SHI.writeTo(${js('Здравствуйте! Пишу из '+(p.title||'SHI'))})`}">${esc(x.label||'НАПИСАТЬ')}</button>`).join('');
   return `${b?`<div class="banner" ${b.media_type==='image'?`style="background-image:url('${esc(b.media_url)}')"`:''}>${b.media_type==='video'?media(b):''}</div>`:''}
    <section class="page"><h2>${esc(p.title||'')}</h2>${p.subtitle?`<div class="sub">${esc(p.subtitle)}</div>`:''}
@@ -290,6 +300,13 @@ function vShop(){
 }
 function plural(n){const a=n%10,b=n%100;return a===1&&b!==11?'товар':a>=2&&a<=4&&(b<12||b>14)?'товара':'товаров';}
 function closeSheet(){ const s=document.getElementById('sheet'), bg=document.getElementById('sheetBg'); if(!s) return; s.classList.remove('open'); bg.classList.remove('open'); setTimeout(()=>{s.remove();bg.remove();},220); document.body.style.overflow=''; }
+function cardInfo(i){ const p=S.curPage||{}; const c=(p.cards||[])[i]; if(!c) return; closeSheet();
+  const bg=document.createElement('div'); bg.className='sheet-bg'; bg.id='sheetBg'; bg.onclick=closeSheet;
+  const s=document.createElement('div'); s.className='sheet'; s.id='sheet';
+  const msg='Здравствуйте! '+(c.title||p.title||'SHI')+'. '+(c.button||'')+'.';
+  s.innerHTML=`<div class="sh-head"><b>${esc(c.title||'')}</b><button aria-label="Закрыть" onclick="SHI.close()">×</button></div><div class="sh-body"><div class="cdesc">${esc(c.text||'')}</div><div class="cact"><button class="btn full" onclick="SHI.writeTo(${js(msg)})">${esc(c.button||'Написать')}</button></div></div>`;
+  document.body.append(bg,s); document.body.style.overflow='hidden'; requestAnimationFrame(()=>{bg.classList.add('open');s.classList.add('open');});
+}
 function openSheet(kind){ closeSheet(); const f=S.filter;
   let title, body, search='';
   if(kind==='cats'){ title='КАТЕГОРИИ';
@@ -316,7 +333,7 @@ function openSheet(kind){ closeSheet(); const f=S.filter;
   document.body.append(bg,s); document.body.style.overflow='hidden'; requestAnimationFrame(()=>{bg.classList.add('open');s.classList.add('open');});
   const q=document.getElementById('bq'); if(q) q.oninput=()=>{ const v=q.value.trim().toLowerCase(); s.querySelectorAll('.srow[data-b]').forEach(r=>{ r.style.display=!v||r.dataset.b.includes(v)||r.dataset.b===''&&!v?'':'none'; }); s.querySelectorAll('.letter').forEach(l=>{ let n=l.nextElementSibling, vis=false; while(n&&!n.classList.contains('letter')){ if(n.style.display!=='none') vis=true; n=n.nextElementSibling; } l.style.display=vis?'':'none'; }); };
 }
-SHI.sheet=openSheet; SHI.close=closeSheet;
+SHI.sheet=openSheet; SHI.close=closeSheet; SHI.cardInfo=cardInfo;
 SHI.toggle=i=>{ const d=document.getElementById('cs'+i), r=document.getElementById('cr'+i); const open=d.style.display==='none'; d.style.display=open?'block':'none'; r.classList.toggle('exp',open); };
 SHI.pick=(c,s)=>{ S.filter.cat=c; S.filter.sub=s||null; if(S.filter.brand&&!filtered().length) S.filter.brand=null; closeSheet(); render(); };
 SHI.brand=b=>{ S.filter.brand=b||null; if(b&&!filtered().length){ S.filter.cat='Все'; S.filter.sub=null; } closeSheet(); render(); };
