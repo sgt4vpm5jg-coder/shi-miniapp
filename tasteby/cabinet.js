@@ -95,6 +95,7 @@ TB.init({ noFooter: true });
         <button class="btn fill wide" data-pub>Опубликовать</button>
         <p style="margin-top:12px"><button class="btn wide" data-later>Сначала доделаю</button></p>`;
       const finish = async (pub) => {
+        if (pub && !S.items.length) { S.step = 2; wizard(); return toast("Сначала добавьте хотя бы одну находку", true); }
         const { error } = await sb.from("profiles").update({ onboarded: true, ...(pub ? { published: true } : {}) }).eq("id", S.p.id);
         if (error) return fail(error);
         S.p.onboarded = true; if (pub) S.p.published = true;
@@ -109,7 +110,7 @@ TB.init({ noFooter: true });
 
   // ---------- Поля ----------
   function avatarField() {
-    return `<div class="av-field"><button type="button" class="av-pick" style="${S.p.avatar_url ? `background-image:url('${esc(S.p.avatar_url)}')` : ""}">${S.p.avatar_url ? "" : esc(TBPage.initials(S.p.name))}</button>
+    return `<div class="av-field"><button type="button" class="av-pick" style="${esc(TBPage.bg(S.p.avatar_url))}">${S.p.avatar_url ? "" : esc(TBPage.initials(S.p.name))}</button>
       <div><b>Фото</b><span>Квадратное, лицо по центру</span><button type="button" class="txt" data-av>${S.p.avatar_url ? "Заменить" : "Загрузить"}</button>${S.p.avatar_url ? ` · <button type="button" class="txt" data-avdel>Убрать</button>` : ""}</div>
       <input type="file" accept="image/*" hidden data-avfile></div>`;
   }
@@ -132,7 +133,7 @@ TB.init({ noFooter: true });
   }
   function itemFields(x) {
     return `<label class="field"><span>Ссылка на товар</span><div class="pre url"><input name="url" type="url" inputmode="url" placeholder="https://" value="${esc(x.url)}" required><button type="button" class="btn fill sm" data-og>Подтянуть</button></div><small class="hint" data-oghint>Название и фото подставятся сами. Если магазин не отдаёт их, заполните вручную.</small></label>
-      <div class="it-photo"><div class="ph" data-ph style="${x.photo_url ? `background-image:url('${esc(x.photo_url)}')` : ""}">${x.photo_url ? "" : "Фото"}</div>
+      <div class="it-photo"><div class="ph" data-ph style="${esc(TBPage.bg(x.photo_url))}">${x.photo_url ? "" : "Фото"}</div>
         <div><button type="button" class="btn sm" data-pfile>${x.photo_url ? "Заменить фото" : "Загрузить фото"}</button><input type="file" accept="image/*" hidden data-pinput><small class="hint">Лучше на белом фоне, товар целиком</small></div></div>
       <label class="field"><span>Название</span><input name="title" maxlength="120" value="${esc(x.title)}" required></label>
       <label class="field"><span>Магазин</span><input name="shop" maxlength="80" value="${esc(x.shop)}" placeholder="Например, Золотое Яблоко"></label>
@@ -179,14 +180,16 @@ TB.init({ noFooter: true });
       await onSave(); b.disabled = false;
     };
   }
-  function setPhoto(f) { const ph = $("[data-ph]", f); ph.style.backgroundImage = `url('${S.draft.photo_url}')`; ph.textContent = ""; $("[data-pfile]", f).textContent = "Заменить фото"; }
+  function setPhoto(f) { const ph = $("[data-ph]", f); ph.setAttribute("style", TBPage.bg(S.draft.photo_url)); ph.textContent = ""; $("[data-pfile]", f).textContent = "Заменить фото"; }
 
   // Сохранить черновик находки (новую или изменённую)
   async function saveDraft() {
     const x = S.draft;
     try {
       let colId = x.collection_id;
-      if (x.newCol && x.newCol.trim()) {
+      const same = x.newCol && S.cols.find((c) => c.title === x.newCol.trim().slice(0, 40));
+      if (same) colId = same.id;
+      else if (x.newCol && x.newCol.trim()) {
         const { data, error } = await sb.from("collections").insert({ user_id: S.user.id, title: x.newCol.trim().slice(0, 40), sort: (S.cols.at(-1)?.sort ?? 0) + 10 }).select("id,title,sort").single();
         if (error) throw error;
         S.cols.push(data); colId = data.id;
@@ -218,7 +221,7 @@ TB.init({ noFooter: true });
       <div class="cab-tabs" role="tablist">${[["items", "Находки"], ["cols", "Подборки"], ["profile", "Профиль"]].map(([k, t]) => `<button role="tab" class="${S.tab === k ? "on" : ""}" data-tab="${k}">${t}</button>`).join("")}</div>
       <div id="tab"></div>
       <p class="cab-out"><button class="txt" data-logout>Выйти</button></p>`;
-    main.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => { S.tab = b.dataset.tab; draw(); }));
+    main.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => { if (S.pOrig) { Object.assign(S.p, S.pOrig); S.pOrig = null; } S.tab = b.dataset.tab; draw(); }));
     $("[data-logout]", main).onclick = TB.logout;
     $("[data-copy]", main).onclick = async (e) => { try { await navigator.clipboard.writeText(pageUrl()); toast("Ссылка скопирована"); } catch { toast("Не получилось скопировать", true); } };
     $("[data-pub]", main).onclick = async () => {
@@ -239,7 +242,7 @@ TB.init({ noFooter: true });
     t.innerHTML = `<button class="btn fill wide" data-add>+ Добавить находку</button>
       ${S.cols.length ? `<div class="chips2 cab-chips">${chips.map((c) => `<button class="${S.filter === c.id ? "on" : ""}" data-f="${c.id}">${esc(c.title)}</button>`).join("")}</div>` : ""}
       ${list.length ? `<ul class="rows">${list.map((i, k) => `<li data-id="${i.id}">
-          <div class="th" style="${i.photo_url ? `background-image:url('${esc(i.photo_url)}')` : ""}"></div>
+          <div class="th" style="${esc(TBPage.bg(i.photo_url))}"></div>
           <div class="tx"><b>${esc(i.title)}</b><small>${esc(i.shop)}${i.collection_id ? " · " + esc(S.cols.find((c) => c.id === i.collection_id)?.title || "") : ""}</small></div>
           <div class="ac"><button aria-label="Выше" data-up ${k ? "" : "disabled"}>↑</button><button aria-label="Ниже" data-down ${k < list.length - 1 ? "" : "disabled"}>↓</button><button data-edit>Изменить</button><button class="del" data-del>Удалить</button></div></li>`).join("")}</ul>`
         : `<p class="empty">${S.items.length ? "В этой подборке пока пусто." : "Пока нет находок. Добавьте первую: ссылка, фото и пара слов от вас."}</p>`}`;
@@ -262,13 +265,15 @@ TB.init({ noFooter: true });
   // Поменять местами две строки по порядку
   async function move(arr, table, a, b) {
     if (!a || !b) return;
-    if (a.sort === b.sort) arr.forEach((r, i) => (r.sort = i * 10));
+    const all = arr.some((r, i) => arr.findIndex((y) => y.sort === r.sort) !== i); // есть одинаковые: пронумеруем заново
+    if (all) arr.forEach((r, i) => (r.sort = i * 10));
     [a.sort, b.sort] = [b.sort, a.sort];
     arr.sort((x, y) => x.sort - y.sort);
     draw();
-    const r1 = await sb.from(table).update({ sort: a.sort }).eq("id", a.id);
-    const r2 = await sb.from(table).update({ sort: b.sort }).eq("id", b.id);
-    if (r1.error || r2.error) fail(r1.error || r2.error);
+    const rows = all ? arr : [a, b];
+    const res = await Promise.all(rows.map((r) => sb.from(table).update({ sort: r.sort }).eq("id", r.id)));
+    const bad = res.find((r) => r.error);
+    if (bad) fail(bad.error);
   }
 
   function editItem(id) {
@@ -334,14 +339,14 @@ TB.init({ noFooter: true });
       <label class="field"><span>Адрес страницы</span><input value="tasteby.ru/${esc(S.p.handle)}" disabled><small class="hint">Адрес не меняется, чтобы ссылки у подписчиков всегда работали.</small></label>
       <button class="btn fill wide">Сохранить</button></form>`;
     const f = $("#fp"); bindAvatar(f); counter(f.bio);
-    const orig = { name: S.p.name, bio: S.p.bio, avatar_url: S.p.avatar_url };
+    const orig = S.pOrig = S.pOrig || { name: S.p.name, bio: S.p.bio, avatar_url: S.p.avatar_url };
     f.oninput = () => { S.p.name = f.name.value; S.p.bio = f.bio.value; preview(); };
     f.onsubmit = async (e) => {
       e.preventDefault();
       if (!f.name.value.trim()) return toast("Укажите имя", true);
       const { error } = await sb.from("profiles").update({ name: f.name.value.trim(), bio: f.bio.value.trim(), avatar_url: S.p.avatar_url }).eq("id", S.p.id);
       if (error) { Object.assign(S.p, orig); return fail(error); }
-      S.p.name = f.name.value.trim(); S.p.bio = f.bio.value.trim(); toast("Сохранено"); draw();
+      S.p.name = f.name.value.trim(); S.p.bio = f.bio.value.trim(); S.pOrig = null; toast("Сохранено"); draw();
     };
   }
 

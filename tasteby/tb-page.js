@@ -2,6 +2,8 @@
 const TBPage = (() => {
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const safeUrl = (u) => (/^https?:\/\//i.test(u || "") ? u : "#");
+  // Фон-картинка: только https, без символов, которыми можно выйти из url() в CSS
+  const bg = (u) => (/^https:\/\//i.test(u || "") ? `background-image:url("${String(u).replace(/["'()\\\s<>]/g, (c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))}")` : "");
   const initials = (n) => String(n || "").trim().split(/\s+/).slice(0, 2).map((w) => w[0] || "").join("").toUpperCase() || "T";
 
   // d = { handle, name, bio, avatar_url, collections:[{id,title}], items:[{id,collection_id,title,url,shop,photo_url,comment}] }
@@ -12,7 +14,7 @@ const TBPage = (() => {
     const addr = "tasteby.ru/" + (d.handle || "");
     root.innerHTML = `
       <section class="d-top">
-        ${d.avatar_url ? `<div class="d-av img" style="background-image:url('${esc(d.avatar_url)}')"></div>` : `<div class="d-av">${esc(initials(d.name))}</div>`}
+        ${bg(d.avatar_url) ? `<div class="d-av img" style="${esc(bg(d.avatar_url))}"></div>` : `<div class="d-av">${esc(initials(d.name))}</div>`}
         <small class="d-by">taste by</small>
         <h1>${esc(d.name || "Ваше имя")}</h1>
         ${d.bio ? `<p>${esc(d.bio)}</p>` : ""}
@@ -29,7 +31,7 @@ const TBPage = (() => {
       }
       const items = (d.items || []).filter((i) => col === "all" || (col === "none" ? (!i.collection_id || !cols.find((c) => c.id === i.collection_id)) : i.collection_id === col));
       grid.innerHTML = items.length ? items.map((x) => `<div class="d-it">
-          <a class="ph" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener nofollow" style="${x.photo_url ? `background-image:url('${esc(x.photo_url)}')` : ""}" aria-label="${esc(x.title)}">${x.photo_url ? "" : `<i>${esc((x.shop || "taste by").slice(0, 18))}</i>`}</a>
+          <a class="ph" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener nofollow" style="${esc(bg(x.photo_url))}" aria-label="${esc(x.title)}">${bg(x.photo_url) ? "" : `<i>${esc((x.shop || "taste by").slice(0, 18))}</i>`}</a>
           <b>${esc(x.title)}</b><span class="shop">${esc(x.shop)}</span>
           ${x.comment ? `<p class="cm">${esc(x.comment)}</p>` : ""}
           <a class="go" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener nofollow">На сайт ↗</a></div>`).join("")
@@ -49,5 +51,5 @@ const TBPage = (() => {
     };
     draw();
   }
-  return { render, esc, initials };
+  return { render, esc, initials, bg };
 })();
