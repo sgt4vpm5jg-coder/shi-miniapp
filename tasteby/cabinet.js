@@ -76,6 +76,7 @@ TB.init({ noFooter: true });
       f.onsubmit = async (e) => {
         e.preventDefault();
         if (!f.name.value.trim()) return toast("Укажите имя", true);
+        if (S.avBusy) return toast("Фото ещё загружается, секунду", true);
         const b = $("button.fill", f); b.disabled = true;
         const { error } = await sb.from("profiles").update({ name: f.name.value.trim(), bio: f.bio.value.trim(), avatar_url: S.p.avatar_url }).eq("id", S.p.id);
         b.disabled = false;
@@ -121,8 +122,9 @@ TB.init({ noFooter: true });
     const del = $("[data-avdel]", f);
     if (del) del.onclick = () => { S.p.avatar_url = null; refreshAvatar(f); preview(); };
     inp.onchange = async () => {
+      S.avBusy = true;
       try { toast("Загружаю фото…"); S.p.avatar_url = await upload(inp.files[0]); refreshAvatar(f); preview(); toast("Фото загружено"); }
-      catch (e) { fail(e); }
+      catch (e) { fail(e); } finally { S.avBusy = false; }
     };
   }
   function refreshAvatar(f) { const box = $(".av-field", f); box.outerHTML = avatarField(); bindAvatar(f); }
@@ -157,9 +159,10 @@ TB.init({ noFooter: true });
     ogBtn.onclick = async () => {
       sync();
       if (!/^https?:\/\/.+\..+/i.test(x.url)) return toast("Вставьте полную ссылку, начиная с https://", true);
-      ogBtn.disabled = true; ogBtn.textContent = "Ищу…";
+      ogBtn.disabled = true; ogBtn.textContent = "Ищу…"; x.busy = true;
       const r = await og(x.url).catch(() => ({ ok: false }));
-      ogBtn.disabled = false; ogBtn.textContent = "Подтянуть";
+      ogBtn.disabled = false; ogBtn.textContent = "Подтянуть"; x.busy = false;
+      if (S.draft !== x) return; // форму уже закрыли
       if (!r.ok) return toast(r.error || "Не получилось открыть ссылку", true);
       if (r.title && !f.title.value) f.title.value = r.title;
       if (r.shop && !f.shop.value) f.shop.value = r.shop;
@@ -170,9 +173,14 @@ TB.init({ noFooter: true });
     };
     const pin = $("[data-pinput]", f);
     $("[data-pfile]", f).onclick = () => pin.click();
-    pin.onchange = async () => { try { toast("Загружаю фото…"); x.photo_url = await upload(pin.files[0]); setPhoto(f); preview(); toast("Фото загружено"); } catch (e) { fail(e); } };
+    pin.onchange = async () => {
+      x.busy = true;
+      try { toast("Загружаю фото…"); const u = await upload(pin.files[0]); if (S.draft !== x) return; x.photo_url = u; setPhoto(f); preview(); toast("Фото загружено"); }
+      catch (e) { fail(e); } finally { x.busy = false; }
+    };
     f.onsubmit = async (e) => {
       e.preventDefault(); sync();
+      if (x.busy) return toast("Фото ещё загружается, секунду", true);
       if (!/^https?:\/\/.+\..+/i.test(x.url)) return toast("Проверьте ссылку", true);
       if (!x.title.trim()) return toast("Укажите название", true);
       if (f.col.value === "__new" && !x.newCol.trim()) return toast("Назовите подборку", true);
@@ -344,6 +352,7 @@ TB.init({ noFooter: true });
     f.onsubmit = async (e) => {
       e.preventDefault();
       if (!f.name.value.trim()) return toast("Укажите имя", true);
+      if (S.avBusy) return toast("Фото ещё загружается, секунду", true);
       const { error } = await sb.from("profiles").update({ name: f.name.value.trim(), bio: f.bio.value.trim(), avatar_url: S.p.avatar_url }).eq("id", S.p.id);
       if (error) { Object.assign(S.p, orig); return fail(error); }
       S.p.name = f.name.value.trim(); S.p.bio = f.bio.value.trim(); S.pOrig = null; toast("Сохранено"); draw();
