@@ -45,7 +45,7 @@ async function resolvesPublic(host: string): Promise<boolean> {
   } catch { return true; } // если DNS недоступен в среде, полагаемся на проверку имени
 }
 // Запрос с ручными переадресациями (каждая проверяется), тайм-аутом и лимитом размера
-async function safeFetch(start: string, accept: string, maxBytes: number): Promise<{ url: URL; type: string; body: Uint8Array } | null> {
+async function safeFetch(start: string, accept: string, maxBytes: number): Promise<{ url: URL; type: string; body: Uint8Array; cut: boolean } | null> {
   let cur = checkUrl(start);
   for (let hop = 0; cur && hop < 4; hop++) {
     if (!(await resolvesPublic(cur.hostname))) return null;
@@ -64,19 +64,19 @@ async function safeFetch(start: string, accept: string, maxBytes: number): Promi
     }
     if (!r.ok || !r.body) { clearTimeout(t); await r.body?.cancel(); return null; }
     const reader = r.body.getReader();
-    const chunks: Uint8Array[] = []; let n = 0;
+    const chunks: Uint8Array[] = []; let n = 0, got = 0; let cut = false;
     try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         n += value.length;
-        if (n > maxBytes) { await reader.cancel(); break; }
-        chunks.push(value);
+        if (n > maxBytes) { cut = true; await reader.cancel(); break; }
+        chunks.push(value); got += value.length;
       }
-    } catch { /* обрыв: берём, что успели */ } finally { clearTimeout(t); }
-    const body = new Uint8Array(Math.min(n, maxBytes)); let o = 0;
-    for (const c of chunks) { const take = Math.min(c.length, body.length - o); body.set(c.subarray(0, take), o); o += take; if (o >= body.length) break; }
-    return { url: cur, type: (r.headers.get("content-type") || "").toLowerCase(), body };
+    } catch { cut = true; /* обрыв: страницу берём, что успели, фото не сохраняем */ } finally { clearTimeout(t); }
+    const body = new Uint8Array(got); let o = 0;
+    for (const c of chunks) { body.set(c, o); o += c.length; }
+    return { url: cur, type: (r.headers.get("content-type") || "").toLowerCase(), body, cut };
   }
   return null;
 }
@@ -104,6 +104,7 @@ Deno.serve(async (req) => {
   const ur = await fetch(`${URL_}/auth/v1/user`, { headers: { apikey: SERVICE, authorization: auth } });
   if (!ur.ok) return json(req, { ok: false, error: "Войдите в кабинет" }, 401);
   const user = await ur.json();
+  if (!user?.id) return json(req, { ok: false, error: "Войдите в кабинет" }, 401);
   const b = await req.json().catch(() => null);
   const link = checkUrl(String(b?.url ?? "").trim());
   if (!link) return json(req, { ok: false, error: "Проверьте ссылку: нужна полная ссылка на товар" });
@@ -123,7 +124,7 @@ Deno.serve(async (req) => {
   if (out.image) {
     const pic = await safeFetch(out.image, "image/avif,image/webp,image/jpeg,image/png,image/*", 5_000_000);
     const ext = pic?.type.includes("png") ? "png" : pic?.type.includes("webp") ? "webp" : pic?.type.includes("jpeg") || pic?.type.includes("jpg") ? "jpg" : "";
-    if (pic && ext && pic.body.length > 1000) {
+    if (pic && ext && !pic.cut && pic.body.length > 1000) {
       const path = `${user.id}/og-${crypto.randomUUID()}.${ext}`;
       const up = await fetch(`${URL_}/storage/v1/object/tb-media/${path}`, {
         method: "POST", headers: { apikey: SERVICE, authorization: `Bearer ${SERVICE}`, "content-type": `image/${ext === "jpg" ? "jpeg" : ext}`, "x-upsert": "false" }, body: pic.body,
