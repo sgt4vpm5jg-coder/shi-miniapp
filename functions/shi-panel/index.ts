@@ -30,11 +30,11 @@ const PANEL = {
   inline_keyboard: [
     [{ text: "О НАС", url: APP + "=about" }, { text: "ПАРТНЁРЫ", url: APP + "=partners" }],
     [{ text: "SHI SHOP", url: APP + "=shop" }, { text: "SHI BUYER", url: APP + "=buyer" }],
-    [{ text: "ПИШИ SHI", url: APP + "=help" }],
+    [{ text: "ПИШИ SHI", url: "https://t.me/shirooms?direct" }], // 28.11: в «Сообщения каналу» (SHI Messages)
   ],
 };
 // Кнопка закреплённого поста (синяя кнопка в шапке канала)
-const PIN = { inline_keyboard: [[{ text: "ОТКРЫТЬ SHI", url: APP }]] };
+const PIN = { inline_keyboard: [[{ text: "SHI SHOP APP", url: APP }]] }; // 28.11: было «ОТКРЫТЬ SHI», название по её просьбе
 const FIX: Record<number, unknown> = { 1544: PANEL, 1529: PIN }; // уже опубликованные посты, которые нужно обновить
 
 async function secret(): Promise<string> {
